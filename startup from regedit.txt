@@ -1,0 +1,3 @@
+CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run
+USERS\S-1-5-21-4205803036-943297712-1973460920-1003\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run

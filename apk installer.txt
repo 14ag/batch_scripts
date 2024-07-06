@@ -1,0 +1,10 @@
+install apps to wsa
+adb shell pm install /adb install
+
+%1 apk file
+	path to file
+%2 target machine
+	list options if >1
+	
+vb script
+batch script or powershell

@@ -1,0 +1,3 @@
+am start -n com.artarmin.launcher/com.artarmin.launcher.ui.activity.HomeActivity
+
+ComponentInfo{com.android.settings/com.android.settings.FallbackHome}
