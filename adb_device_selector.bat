@@ -1,5 +1,4 @@
 @echo off
-
 REM Make list of ADB devices
 setlocal enabledelayedexpansion
 set i=0
@@ -14,6 +13,9 @@ for /f "eol=L tokens=1" %%a in ('adb devices ^| findstr "device"') do (
         set /a sum_of_devices+=1
     )
 )
+
+REM check for connected devices
+if !sum_of_devices!==0 echo no devices connected & exit /b
 
 REM use the default device 
 if !sum_of_devices!==1 set id=1 & goto set_adb_device
@@ -37,14 +39,14 @@ REM Validate user's selection
 
 :set_adb_device
 REM Set the selected device as a variable that persists outside the local scope
-for /f "tokens=1" %%d in ('echo device_%id%') do (
+for /f "tokens=1" %%d in ("device_%id%") do (
 	for /f "tokens=1" %%e in ('set %%d') do (
-		for /f "tokens=2 delims==" %%f in ('echo %%e') do (
-			set device=%%f
+		for /f "tokens=2 delims==" %%f in ("%%e") do (
+			set x=%%f
 		)
     )
 )
-endlocal
-echo %adb_device%
+endlocal & set device=%x%
+echo %device%
 exit /b
 
