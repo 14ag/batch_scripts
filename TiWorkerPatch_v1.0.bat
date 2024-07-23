@@ -1,9 +1,9 @@
 @echo off
-rem the lessi nteractive version
 set executableName=TiWorker.exe
+echo hey. ill take it from here
 :patch
 (
-tasklist | find /I /N "%executableName%" >nul 2>&1
+tasklist | find /I /N "%executableName%%" >nul 2>&1
 ) && (
 	:: found
 	REM This line does nothing by itself, but it prevents a syntax error
@@ -12,11 +12,16 @@ tasklist | find /I /N "%executableName%" >nul 2>&1
 	taskkill /f /im %executableName% >nul 2>&1
 	) && (
 		:: killed
+		if not defined x (
+		echo gottem.
+		set x=1
 		goto wait
+		)
+		echo gottem again.
 	) || (
 		:: unkilled
-		msg %USERNAME% /server:%COMPUTERNAME% sorry it came to this. this script is now weak
-		exit /b
+		echo sorry it came to this. this script is now weak
+		pause >nul && exit /b
 	)
 ) || (
 	:: unfound
