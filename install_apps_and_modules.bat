@@ -55,8 +55,8 @@ for /r %%i IN (*.apk) do (
 )
 cls
 
-:zips
-echo on
+REM :zips
+REM echo on
 ::zips
 REM copy /y "%source_directory%\*.zip" "%work_dir%\*.zip" 2>&1 >nul
 setlocal enabledelayedexpansion
@@ -66,34 +66,25 @@ for /r %%j IN (*.zip) do (
 	adb -s %device% push --sync "%%j" "!drop!" 
 	(
 	echo.
-	echo==============================================================0
 	(
 	REM :: install modules
 	REM ::  Prepare the module path, escaping special characters
 	set "module=!drop!/%%~nxj" 2>&1 >nul
 	set "module=!module:'='"'"'!" 2>&1 >nul
-	echo==============================================================1
 	::  Install the module
 	adb -s %device% shell "su -c 'magisk --install-module \"!module!\"'" 
 	) && (
-	echo==============================================================2
 		:: success cleanup
 		echo %%~nxj installed
-		echo==============================================================3
-		adb -s %device% shell rm \"!module!\" 2>&1 >nul
-		echo==============================================================4
+		adb -s %device% shell rm -f \"!module!\" 2>&1 >nul
 		del /q "%%j" 2>&1 >nul
-		echo==============================================================5
 		echo.
 		echo.
 		) 
 	) || (
 	:: failed
-	echo==============================================================6
 	echo %%~nxj not installed
-	echo==============================================================7
-	adb -s %device% shell "su -c 'rm -f \"!module!\"'" 2>&1 >nul
-	echo==============================================================8
+	adb -s %device% shell rm -f \"!module!\" 2>&1 >nul
 	echo.
 	echo.
 	)
