@@ -7,7 +7,7 @@ call :adb_list
 set source_directory=C:\Users\Administrator\Sauce\sendoff
 :install
 set work_dir=%source_directory%
-REM set drop=/storage/emulated/0/
+set drop=/storage/emulated/0/drop
 
 if not defined source_directory (
 	set /p source_directory="define source_directory variable here without quotes: "
@@ -17,13 +17,14 @@ if not defined source_directory (
 
 
 
+
 :: make folder for dropping packages
-if not exist %work_dir% mkdir %work_dir% 2>&1 >nul
-adb -s %device% -s %device% shell if [ -d %drop% ]; then mkdir %drop%; fi 2>&1 >nul
+if not exist %work_dir% mkdir %work_dir%
+adb -s %device% shell if [ ! -d %drop% ]; then mkdir %drop%; fi
 cd /d "%work_dir%"
 
 
-
+goto zips
 ::apps
 REM copy /y "%source_directory%\*.apk" "%work_dir%\*.apk" 2>&1 >nul
 	
@@ -54,36 +55,45 @@ for /r %%i IN (*.apk) do (
 )
 cls
 
-
-
+:zips
+echo on
 ::zips
 REM copy /y "%source_directory%\*.zip" "%work_dir%\*.zip" 2>&1 >nul
 setlocal enabledelayedexpansion
+
 :: getlist of modules (zip files)
 for /r %%j IN (*.zip) do (
-	adb -s %device% -s %device% push --sync "%%j" "!drop!" 2>nul
+	adb -s %device% push --sync "%%j" "!drop!" 
 	(
 	echo.
+	echo==============================================================0
 	(
-	:: install modules
-	::  Prepare the module path, escaping special characters
-	set "module=!drop!/%%~nxj"
-	set "module=!module:'='"'"'!"
-	
+	REM :: install modules
+	REM ::  Prepare the module path, escaping special characters
+	set "module=!drop!/%%~nxj" 2>&1 >nul
+	set "module=!module:'='"'"'!" 2>&1 >nul
+	echo==============================================================1
 	::  Install the module
 	adb -s %device% shell "su -c 'magisk --install-module \"!module!\"'" 
 	) && (
+	echo==============================================================2
 		:: success cleanup
 		echo %%~nxj installed
+		echo==============================================================3
 		adb -s %device% shell rm \"!module!\" 2>&1 >nul
+		echo==============================================================4
 		del /q "%%j" 2>&1 >nul
+		echo==============================================================5
 		echo.
 		echo.
 		) 
 	) || (
 	:: failed
+	echo==============================================================6
 	echo %%~nxj not installed
+	echo==============================================================7
 	adb -s %device% shell "su -c 'rm -f \"!module!\"'" 2>&1 >nul
+	echo==============================================================8
 	echo.
 	echo.
 	)
@@ -118,6 +128,7 @@ for /f "eol=L tokens=1" %%a in ('adb devices ^| findstr "device"') do (
 
 ::  check for connected devices
 if !sum_of_devices!==0 echo no devices connected & exit
+
 ::  use the default device 
 if !sum_of_devices!==1 set id=1 & goto set_adb_device
 
