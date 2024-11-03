@@ -18,7 +18,8 @@ if not defined source_directory (
 
 rem make folder for dropping packages
 if not exist %work_dir% mkdir %work_dir%
-rem adb -s %device% shell if [ ! -d %drop% ]; then mkdir %drop%; fi
+adb -s %device% shell if [ ! -d %drop% ]; then mkdir %drop%; fi
+pause
 pushd "%work_dir%"
 
 
@@ -80,7 +81,8 @@ for /r %%j IN (*.zip) do (
 	) || (
 	rem failed
 	echo %%~nxj not installed
-	adb -s %device% shell rm -f \"!module!\" 2>&1 >nul
+	echo install manually from folder %drop%
+	rem adb -s %device% shell rm -f \"!module!\" 2>&1 >nul
 	echo.
 	echo.
 	)
@@ -114,7 +116,7 @@ for /f "eol=L tokens=1" %%a in ('adb devices ^| findstr "device"') do (
 
 
 rem check for connected devices
-if !sum_of_devices!==0 echo no devices connected & exit
+if !sum_of_devices!==0 echo no devices connected & pause & exit
 
 rem use the default device 
 if !sum_of_devices!==1 set id=1 & goto set_adb_device
