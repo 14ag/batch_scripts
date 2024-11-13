@@ -38,8 +38,7 @@ if errorlevel 3 (
 )
 if errorlevel 2 set dir=out && goto main
 if errorlevel 1 set dir=in && goto main
-echo done1
-exit /b
+
 
 :main
 for %%i in ("%programFullPath%") do set ruleName=%%~ni
