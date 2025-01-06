@@ -22,7 +22,7 @@ adb -s %device% shell if [ ! -d %drop% ]; then mkdir %drop%; fi
 pause
 pushd "%work_dir%"
 
-
+goto :zips
 rem apps
 rem copy /y "%source_directory%\*.apk" "%work_dir%\*.apk" 2>&1 >nul
 	
@@ -53,7 +53,7 @@ for /r %%i IN (*.apk) do (
 )
 cls
 
-rem :zips
+:zips
 rem zips
 rem copy /y "%source_directory%\*.zip" "%work_dir%\*.zip" 2>&1 >nul
 setlocal enabledelayedexpansion
