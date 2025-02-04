@@ -15,10 +15,10 @@ echo.
 
 :getVars
 set /p programFullPath="Type full path with the quotes :: "
-if not exist "%programFullPath%" (
-    echo Error: Invalid file path. Please try again.
-    goto getVars
-    )
+REM if not exist "%programFullPath%" (
+    REM echo Error: Invalid file path. Please try again.
+    REM goto getVars
+    REM )
 
 echo.
 echo 1. allow
