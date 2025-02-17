@@ -1,10 +1,10 @@
 @echo off
 call :code
 
-echo hi
+echo hi2
 pause
 
 :code
-echo zz
+echo 
 pause
 exit/b
