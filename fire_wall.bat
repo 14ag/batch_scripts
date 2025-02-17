@@ -2,7 +2,7 @@
 REM     Usage: fire_wall.bat "path\to\program.exe" ^[allow^|block^] ^[in^|out^|all^]
 
 setlocal enabledelayedexpansion
-set "program_full_path="%~1""
+set "program_full_path=%~1"
 set "allow_block=%~2"
 set "dir=%~3"
 
@@ -84,8 +84,8 @@ if "%dir%"=="all" (
 		)
 
 :main
-for %%i in ("%program_full_path%") do set "rule_name=%%~ni"
-netsh advfirewall firewall add rule name="%rule_name%" dir=%dir% program=%program_full_path% profile=any action=%allow_block% enable=yes
+for %%i in ("%program_full_path:"=%") do set "rule_name=%%~ni"
+netsh advfirewall firewall add rule name="%rule_name%" dir=%dir% program="%program_full_path:"=%" profile=any action=%allow_block% enable=yes
 exit /b
 
 :usage
