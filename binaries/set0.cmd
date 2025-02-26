@@ -6,6 +6,7 @@ echo %* | find "-help" 2>&1 >nul
 echo  set0 [variable]=[command]
 echo   - assigns the output of the command to the variable.
 echo   - example: set0 var=echo foo bar
+pause
 exit /b
 )
 
