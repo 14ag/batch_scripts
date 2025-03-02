@@ -1,11 +1,11 @@
 @echo off
 REM     Usage: fire_wall.bat "path\to\program.exe" ^[allow^|block^] ^[in^|out^|all^]
-title %~n0
+
 setlocal enabledelayedexpansion
 set "program_full_path=%~1"
 set "allow_block=%~2"
 set "dir=%~3"
-set "no_loop=%~3"
+
 REM Validate path parameter
 if "%~1"=="" goto usage
 
@@ -77,12 +77,11 @@ if "%dir%"=="all" (
     call :main
     set "dir=in"
     call :main
-    goto :end
+    goto :eof
 	) else (
 		call :main
-		goto :end
+		goto :eof
 		)
-
 
 :main
 for %%i in ("%program_full_path:"=%") do set "rule_name=%%~ni"
@@ -98,11 +97,6 @@ goto getVars
 :resetChoice
 exit /b 0
 
-:end
-if not defined no_loop (
-	echo.
-	echo.
-	goto :getVars
-	) else (
-	exit /b
-	)
+:eof
+pause
+exit /b
