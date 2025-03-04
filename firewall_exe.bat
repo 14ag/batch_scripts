@@ -11,6 +11,11 @@ if "%~1" NEQ "" (
     set "SEARCH_DIR=%~1"
 )
 
+:loop
+if "SEARCH_DIR" == "" (
+	set x=1
+    set /p "SEARCH_DIR=search_dir?? ::"
+)
 rem Define the path to the second script (adjust this as needed)
 set "OTHER_SCRIPT=c:\users\philip\sauce\batch_scripts\fire_wall.bat"
 
@@ -20,4 +25,9 @@ for /r "%SEARCH_DIR%" %%F in (*.exe) do (
 )
 
 endlocal
+if "%x%" == "1" (
+	pause
+    goto :loop
+)
+
 exit /b
