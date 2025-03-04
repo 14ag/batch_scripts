@@ -100,8 +100,7 @@ cls
 set "infos=Installing '%package%'..."
 call :info
 :: Install the package using PowerShell. The -ForceDeployment option is useful for updates.
-echo %package%       xxxxxxXxXxXXxXxXxXXxxxxXxXxxxxxxx
-@REM powershell -NoProfile -ExecutionPolicy Bypass -Command "try { Add-AppxPackage -Path '%package%' -ForceDeployment -ErrorAction Stop } catch { exit 1 }" >nul 2>&1
+powershell -NoProfile -ExecutionPolicy Bypass -Command "try { Add-AppxPackage -Path '%package%' -ForceDeployment -ErrorAction Stop } catch { exit 1 }" >nul 2>&1
 
 
 if errorlevel 1 (
