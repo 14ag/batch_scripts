@@ -10,29 +10,29 @@ if errorlevel 1 (
 )
 
 setlocal
+set "currentDirectory=%~dp0"
+set "currentDirectory=%currentDirectory:~0,-1%"
 
 set "errors="
 set "infos="
 set "package="
 set "loop="
-
+cd %currentDirectory%
 if "%~1"=="" (
-    set "loop=1"
-    goto getVars
-) else (
     set "infos=you can Drag and drop an .appx or .appxbundle file onto this script."
     call :info
+    goto getVars
+) else (
     set "package=%~1"
     goto check
 )
 
 
 :getVars
-cls
+set "loop=1"
 set "infos=Press Enter to install all packages in the current directory"
 call :info
 set /p "package="
-echo -----------------------------------------------1
 if "%package: =%"=="" (
     dir /b *.appx *.msix *.appxbundle 2>nul | find "." >nul
     if errorlevel 1 (
@@ -53,14 +53,12 @@ if "%package: =%"=="" (
     ) else if %errorlevel% equ 1 (
         set "ok_count=0"
         set "error_count=0"
-        echo -----------------------------------------------2
 
         for %%i in (*.appx, *.msix, *.appxbundle) do (
             set "package="%%~i""
             call :install
             if errorlevel 0 set /a "ok_count+=1"
         )
-        echo -----------------------------------------------3
 
         set "infos=done. %ok_count% packages installed successfully."
         call :info
@@ -73,21 +71,20 @@ if "%package: =%"=="" (
 
 
 :check
-echo -----------------------------------------------4
 
 for %%i in ("%package:"=%") do (
         set "package=%%~i"
     )
-echo -----------------------------------------------5
 
 if exist "%package%" (
-    if not "%package:~-5%"==".appx" (
-        if not "%package:~-4%"==".msix" (
-            if not "%package:~-10%"==".appxbundle" (
+    if /i not "%package:~-5%"==".appx" (
+        if /i not "%package:~-5%"==".msix" (
+            if /i not "%package:~-11%"==".appxbundle" (
                 set "errors=not a supported package."
-                echo %package%
                 goto error
-    )   )   )
+            )
+        )
+    )
 ) else (
     set "errors=file not found."
     goto error
@@ -114,8 +111,10 @@ if errorlevel 1 (
     set "infos= ok."
     call :info
     echo.
+    pause
+    exit /b 0
+
 )
-exit /b 0
 
 
 :resetChoice
@@ -127,7 +126,6 @@ echo error: %errors%
 set "errors="
 pause
 cls
-pause
 goto getVars
 
 
@@ -142,6 +140,7 @@ exit /b 0
 :end
 if "%loop%"=="1" (
     pause
+    cls
     goto getVars
 ) else (
     exit /b 0

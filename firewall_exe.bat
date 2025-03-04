@@ -4,7 +4,10 @@ rem usage:  firewall_exe.bat "path\to\target folder"
 setlocal enabledelayedexpansion
 
 rem Define the directory to search (current directory by default)
-set "SEARCH_DIR=%CD%"
+
+set "currentDirectory=%~dp0"
+set "currentDirectory=%currentDirectory:~0,-1%"
+set "SEARCH_DIR=%currentDirectory%"
 
 rem If an argument is provided, use it as the directory
 if "%~1" NEQ "" (
