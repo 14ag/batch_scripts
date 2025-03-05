@@ -6,7 +6,7 @@ echo hey. ill take it from here
 tasklist | find /I /N "%executableName%%" >nul 2>&1
 ) && (
 	:: found
-	REM This line does nothing by itself, but it prevents a syntax error
+	:: This line does nothing by itself, but it prevents a syntax error
 	echo >nul
 	(
 	taskkill /f /im %executableName% >nul 2>&1

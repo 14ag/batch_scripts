@@ -1,15 +1,15 @@
 @echo off
-REM     Usage: fire_wall.bat "path\to\program.exe" ^[allow^|block^] ^[in^|out^|all^]
+::     Usage: fire_wall.bat "path\to\program.exe" ^[allow^|block^] ^[in^|out^|all^]
 
 setlocal enabledelayedexpansion
 set "program_full_path=%~1"
 set "allow_block=%~2"
 set "dir=%~3"
 
-REM Validate path parameter
+:: Validate path parameter
 if "%~1"=="" goto usage
 
-REM Validate rule parameter
+:: Validate rule parameter
 set "items=0"
 set "count=0"
 for %%i in (allow,block) do (
@@ -20,7 +20,7 @@ for %%i in (allow,block) do (
 )
 if "%count%" geq "%items%" goto usage
 
-REM Validate dir parameter
+:: Validate dir parameter
 set "items=0"
 set "count=0"
 for %%i in (in,out,all) do (
@@ -31,17 +31,17 @@ for %%i in (in,out,all) do (
 )
 if "%count%" geq "%items%" goto usage
 
-rem lesgooooooo
+:: lesgooooooo
 goto :subRoutine
 
 :getVars
 set "program_full_path="
 set /p "program_full_path=Type full path with quotes :: "
-REM Uncomment file existence check if needed
-REM if not exist "%program_full_path%" (
-REM     echo Error: Invalid file path.
-REM     goto getVars
-REM )
+:: Uncomment file existence check if needed
+:: if not exist "%program_full_path%" (
+::     echo Error: Invalid file path.
+::     goto getVars
+:: )
 
 
 :allow_blockChoice

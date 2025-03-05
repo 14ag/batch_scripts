@@ -1,12 +1,12 @@
 @echo off
-rem the lessi nteractive version
+:: the lessi nteractive version
 set executableName=TiWorker.exe
 :patch
 (
 tasklist | find /I /N "%executableName%" >nul 2>&1
 ) && (
 	:: found
-	REM This line does nothing by itself, but it prevents a syntax error
+	:: This line does nothing by itself, but it prevents a syntax error
 	echo >nul
 	(
 	taskkill /f /im %executableName% >nul 2>&1

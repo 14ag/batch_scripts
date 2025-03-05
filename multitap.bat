@@ -1,6 +1,6 @@
 @echo off
 
-rem i made this for multitapping phone using adb
+:: i made this for multitapping phone using adb
 title waiting
 ::time to tap out 848
 echo waiting for active task

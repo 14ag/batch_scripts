@@ -1,92 +1,92 @@
 @echo off
 
 goto end
-rem location_you_want_the_shortcut actual_file 
-REM ======== on desktop
-REM sauce 
+:: location_you_want_the_shortcut actual_file 
+:: ======== on desktop
+:: sauce 
 junction "%userprofile%\desktop\sauce" "%userprofile%\sauce"
 
-REM note_10
+:: note_10
 junction "%userprofile%\desktop\note_10" "D:\note_10"
 
-REM x64
+:: x64
 junction "%userprofile%\desktop\x64" "%userprofile%\sauce\x64"
 
-REM tmp
+:: tmp
 junction "%userprofile%\desktop\tmp" "C:\Xiaomi\XiaomiTool2\res\tmp"
 
 
-REM =========== on sauce
-REM documents
+:: =========== on sauce
+:: documents
 junction "%userprofile%\sauce\documents" "%userprofile%\documents"
 
-REM note_10
+:: note_10
 junction "%userprofile%\sauce\note_10" "D:\note_10"
 
-REM presets
+:: presets
 junction "%userprofile%\sauce\presets" "G:\My Drive\presets"
 
-REM reads
+:: reads
 junction "%userprofile%\sauce\reads" "%userprofile%\Documents\library\pc reads"
 
-REM tmp
+:: tmp
 junction "%userprofile%\sauce\tmp" "C:\Xiaomi\XiaomiTool2\res\tmp"
 
 
-REM ============ on note_10
-REM sauce
+:: ============ on note_10
+:: sauce
 junction "D:\note_10\sauce" "%userprofile%\sauce"
 
-REM tmp
+:: tmp
 junction "D:\note_10\tmp" "C:\Xiaomi\XiaomiTool2\res\tmp"
 
 
-REM ============ on tmp
-REM note_10
+:: ============ on tmp
+:: note_10
 junction "C:\Xiaomi\XiaomiTool2\res\tmp\note_10" "D:\note_10"
 
-REM sauce
+:: sauce
 junction "C:\Xiaomi\XiaomiTool2\res\tmp\sauce" "%userprofile%\sauce"
 
 
-REM ============ on apk
-REM sendoff
+:: ============ on apk
+:: sendoff
 junction "D:\note_10\apk\sendoff" "%userprofile%\sauce\sendoff"
 
-REM ============ on magisk modules 
-REM sendoff
+:: ============ on magisk modules 
+:: sendoff
 junction "D:\note_10\magisk_modules\sendoff" "%userprofile%\sauce\sendoff"
 
-REM ============= on sendoff
-REM apk
+:: ============= on sendoff
+:: apk
 junction "%userprofile%\sauce\sendoff\apk" "D:\note_10\apk"
 
-REM magisk
+:: magisk
 junction "%userprofile%\sauce\sendoff\magisk_modules" "D:\note_10\magisk_modules"
 
-REM app2
+:: app2
 junction "%userprofile%\sauce\sendoff\app2" "D:\note_10\magisk_modules\app2"
 
 
-REM ============= on downloads
-REM note_10
+:: ============= on downloads
+:: note_10
 junction "%userprofile%\downloads\note_10" "D:\note_10"
 
-REM sauce
+:: sauce
 junction "%userprofile%\downloads\sauce" "%userprofile%\sauce"
 
 
-REM ============ on 01
-REM tmp
+:: ============ on 01
+:: tmp
 junction "D:\tmp" "C:\Xiaomi\XiaomiTool2\res\tmp"
 
-REM ============ on yts2
-REM yts
+:: ============ on yts2
+:: yts
 junction "D:\yts2\more_movies" "%userprofile%\Videos\yts"
 
 
-REM ================== on yts
-REM yts2
+:: ================== on yts
+:: yts2
 junction "%userprofile%\Videos\yts\more_movies" "D:\yts2"
 
 :end

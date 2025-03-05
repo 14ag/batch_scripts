@@ -1,4 +1,4 @@
-REM @echo off
+:: @echo off
 set0 x=t
 
 

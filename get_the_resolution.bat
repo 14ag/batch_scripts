@@ -1,4 +1,4 @@
-REM @echo off
+:: @echo off
 setlocal
 for /f %%i in ('wmic path Win32_VideoController get CurrentHorizontalResolution^,CurrentVerticalResolution /value ^| find "="') do set "%%i"
 set pwidth=%CurrentVerticalResolution%/2

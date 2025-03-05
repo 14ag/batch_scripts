@@ -17,7 +17,7 @@ IF '%errorlevel%' NEQ '0' (
 :gotAdmin
     pushd "%CD%"
     CD /D "%~dp0"
-rem ------------------------------------------------------------------------------
+:: ------------------------------------------------------------------------------
 cls
 :statr
 ipconfig /renew >nul
@@ -65,5 +65,5 @@ reg add "HKEY_LOCAL_MACHINE\SOFTWARE\POLICIES\MICROSOFT\Windows\NetworkConnectiv
 gpupdate /force >nul
 echo press enter to restart your pc
 pause >nul
-REM shutdown /r /f /t 3 
+:: shutdown /r /f /t 3 
 exit

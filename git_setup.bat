@@ -5,13 +5,13 @@
 set GIT_USERNAME="14ag"
 set GIT_EMAIL="muriukipn@gmail.com"
 set GIT_DEFAULT_BRANCH="main"
-REM set GIT_EDITOR="notepad"
+:: set GIT_EDITOR="notepad"
 
 :: Configure Git settings
 git config --global user.name %GIT_USERNAME%
 git config --global user.email %GIT_EMAIL%
 git config --global init.defaultBranch %GIT_DEFAULT_BRANCH%
-REM git config --global core.editor %GIT_EDITOR%
+:: git config --global core.editor %GIT_EDITOR%
 git config --global pull.rebase false
 
 echo Git has been configured with the following settings:

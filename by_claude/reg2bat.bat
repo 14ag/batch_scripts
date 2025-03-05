@@ -39,7 +39,7 @@ set "output=%~n1.bat"
 for /f "usebackq delims=" %%a in ("%~1") do (
     set "line=%%a"
     
-    :: Remove quotes from the line
+    :: ::ove quotes from the line
     set "line=!line:"=!"
     
     :: Skip empty lines and comments
