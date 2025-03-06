@@ -5,9 +5,9 @@ setlocal enabledelayedexpansion
 
 :: Define the directory to search (current directory by default)
 
-set "currentDirectory=%~dp0"
-set "currentDirectory=%currentDirectory:~0,-1%"
-set "SEARCH_DIR=%currentDirectory%"
+REM set "currentDirectory=%~dp0"
+REM set "currentDirectory=%currentDirectory:~0,-1%"
+REM set "SEARCH_DIR=%currentDirectory%"
 
 :: If an argument is provided, use it as the directory
 if "%~1" NEQ "" (

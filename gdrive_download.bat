@@ -10,4 +10,5 @@ for %%i in ("%de:"=%") do set "de=%%~i"
 robocopy "%sauce%" "%de%" /e /w:2 /njh
 
 pause
+cls
 goto :main

@@ -29,7 +29,6 @@ if "%~1"=="" (
 
 :: get variables
 :getVars
-
 :: sets loop to happen if drag and drop is not happening
 set "loop=1"
 set "infos=Press Enter to install all packages in the current directory"
