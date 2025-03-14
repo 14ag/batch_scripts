@@ -1,8 +1,8 @@
-REM @echo off
+@echo off
 
 :: user variables
 setlocal
-set "extensions=.bat"
+set "extensions=.txt .bat"
 :: callback script
 set "OTHER_SCRIPT=%userprofile%\sauce\batch_scripts\fire_wall.bat"
 
@@ -19,16 +19,14 @@ for %%F in ("%OTHER_SCRIPT%") do (
     set "dpF=%%~dpF"
     set "nxF=%%~nxF"
 )
-where /r "%dpF:~0,-1%" %nxF%
-REM >nul 2>&1
-	if errorlevel 1 (
-		echo :error a callback script is required
-		pause
-		exit /b
-	) else (
-		cls
-		echo ok
-	)
+where /r "%dpF:~0,-1%" %nxF% >nul 2>&1
+if errorlevel 1 (
+	echo :error a callback script is required
+	pause
+	exit /b
+) else (
+	cls
+)
 	
 :: drag and drop
 if "%~1"=="" (
@@ -38,7 +36,8 @@ if "%~1"=="" (
     set "file=%~1"
     goto check
 )
-
+::OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+CLS
 
 :: get variables
 :getVars
@@ -47,46 +46,54 @@ set "file="
 set "loop=1"
 call :info Press Enter to process all %extensions%s in the current directory
 set /p "file=::"
-:: check if the current directory has any file
-if not "%file: =%"=="" (
+if defined file (
 	call :check
     goto end
 )
 
+:directory_processing
+:: check if the current directory has any file
 cd %currentDirectory%
-dir /b %extensions% 2>nul | find "." >nul
+for %%j in (%extensions%) do (
+	dir /b *%%j 2>nul | find "." >nul
+)
 if errorlevel 1 (
 	call :error No compatible file found in current directory.
 )
 
 cls
 call :info Found the following files:
-for /r "%currentDirectory%" %%i in (%extensions%) do (
-	echo %%~nxi
+for %%j in (%extensions%) do (
+	dir /b *%%j
 )
 
+setlocal enabledelayedexpansion
 :: confirm install all files in the current directory
 call :resetChoice
-CHOICE /C yn /N /M "continue? [Y]es, [N]o"
+echo.
+CHOICE /C yn /N /M "\\\\\\\\ continue? [Y]es, [N]o ///////////"
 if %errorlevel% equ 2 (
-	pause
+	cls
 	goto :getVars
 ) else if %errorlevel% equ 1 (
 	set "ok_count=0"
 	set "error_count=0"
 	:: install each file in the current directory
-	for /r "%currentDirectory%" %%i in (%extensions%) do (
-		call :main "%%~i"
-		if errorlevel 0 set /a "ok_count+=1"
-	)
+	for %%j in (%extensions%) do (
+		for /r "%currentDirectory%" %%i in (*%%j) do (
+			echo %%~i
+			@REM call :main %%~i
+			if errorlevel 0 set /a "ok_count+=1"
+		))
 	:: show number of files installed successfully
-	call :info done. %ok_count% files processed successfully.
+	call :info done. !ok_count! files processed successfully.
+	endlocal
 	goto end
 )
 
 
 :check
-cls
+REM cls
 set "file=%file:"=%"
 setlocal enabledelayedexpansion
 :: validate file type
@@ -113,7 +120,6 @@ exit /b
 ::---------------------------------------------------------------------------------------------------
 :main
 set "a=%1"
-cls
 call :info Installing '%a%'...
 
 
@@ -125,10 +131,9 @@ echo %OTHER_SCRIPT% %a%
 :: feedback on install
 if errorlevel 1 (
     call :error failed. Check for error messages above.
-) else (
-    call :info ok.
-    exit /b 0
-)
+) 
+exit /b 0
+
 ::---------------------------------------------------------------------------------------------------
 
 
@@ -143,7 +148,7 @@ exit /b 0
 
 :: error handling
 :error
-echo error: %*
+echo error: %* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 pause
 cls
 goto getVars
