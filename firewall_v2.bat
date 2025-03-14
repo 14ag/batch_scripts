@@ -1,10 +1,10 @@
 ::file processing template
 ::---------------------------------------------------------------------------------------------------
-@REM @echo off
+@echo off
 
 :: user variables
 setlocal
-set "extensions=.txt"
+set "extensions=.exe"
 :: callback script
 set "OTHER_SCRIPT="
 
@@ -17,7 +17,7 @@ set "in_out_all=%~3"
 set "file=%~1"
 set "loop="
 
-
+goto skip
 :: validate callback script exists and is executable
 if not defined OTHER_SCRIPT (
 	echo :error Callback script not specified
@@ -36,6 +36,7 @@ if errorlevel 1 (
 ) else (
 	cls
 )
+:skip
 
 :: Validate allow_block parameter
 set "items=0"
@@ -128,7 +129,7 @@ if %errorlevel% equ 2 (
 	:: install each file in the current directory
 	for %%j in (%extensions%) do (
 		for /r "%currentDirectory%" %%i in (*%%j) do (
-		    call :subRoutine %%~i
+		    call :subRoutine "%%~i"
 			if errorlevel 0 set /a "ok_count+=1"
 		)   )
 		
@@ -155,7 +156,7 @@ for %%k in ("%file%") do (
 			call :error not a supported file.
 			)	)	)
 endlocal
-call :subRoutine %file%
+call :subRoutine "%file%"
 exit /b
 
 
@@ -164,7 +165,7 @@ exit /b
 ::---------------------------------------------------------------------------------------------------
 :subRoutine
 ::---------------------------------------------------------------------------------------------------
-set "x=%~1"
+set "x=%*"
 if "%in_out_all%"=="all" (
     set "in_out_all=out"
     call :main %x%
@@ -178,13 +179,14 @@ if "%in_out_all%"=="all" (
 
 
 :main
-set "program_full_path=%~1"
-call :info Processing '%program_full_path%'...
+set "program_full_path=%*"
+call :info Processing %program_full_path%...
 for %%i in ("%program_full_path:"=%") do set "rule_name=%%~ni"
 
 
 ::test
-echo name="%rule_name%" dir=%in_out_all% program="%program_full_path:"=%" profile=any action=%allow_block% enable=yes
+REM echo name="%rule_name%" program="%program_full_path:"=%"
+netsh advfirewall firewall add rule name="%rule_name%" dir=%dir% program="%program_full_path:"=%" profile=any action=%allow_block% enable=yes >nul 2>&1
 
 :: feedback on processing
 
