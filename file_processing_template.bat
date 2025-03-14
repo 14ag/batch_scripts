@@ -13,17 +13,18 @@ set "currentDirectory=%~dp0"
 set "file="
 set "loop="
 
+:: validate callback script exists and is executable
 for %%F in ("%OTHER_SCRIPT%") do (
     set "dpF=%%~dpF"
     set "nxF=%%~nxF"
 )
 where /r "%dpF:~0,-1%" %nxF% >nul 2>&1
 if errorlevel 1 (
-	echo :error a callback script is required
-	pause
-	exit /b
+    echo :error Callback script '%OTHER_SCRIPT%' not found or not executable
+    pause
+    exit /b 1
 ) else (
-	cls
+    cls
 )
 	
 :: drag and drop
@@ -62,13 +63,15 @@ set "currentDirectory=%currentDirectory:"=%"
 if "%currentDirectory:~-1%"=="\"(
 	set "currentDirectory=%currentDirectory:~0,-1%"
 )
-:: check if the current directory has any file
+:: check for compatible files
 cd %currentDirectory%
+set "found_files=0"
 for %%j in (%extensions%) do (
-	dir /b *%%j 2>nul | find "." >nul
+    dir /b *%%j 2>nul | find "." >nul && set /a "found_files+=1"
 )
-if errorlevel 1 (
-	call :error No compatible file found in current directory.
+if %found_files% equ 0 (
+    call :error No compatible files found in "%currentDirectory%"
+    goto getVars
 )
 
 cls
@@ -130,20 +133,18 @@ exit /b
 
 ::---------------------------------------------------------------------------------------------------
 :main
-set "a=%1"
-call :info Installing '%a%'...
-
-
+set "a=%~1"
+call :info Processing '%a%'...
 
 echo %OTHER_SCRIPT% %a%
 
-
-
-:: feedback on install
+:: feedback on processing
 if errorlevel 1 (
-    call :error failed. Check for error messages above.
-) 
-exit /b 0
+    call :error Processing failed for '%a%'. Check error messages above.
+) else (
+    call :info Successfully processed '%a%'
+)
+exit /b %errorlevel%
 
 ::---------------------------------------------------------------------------------------------------
 
