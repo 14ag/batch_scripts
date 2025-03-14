@@ -10,8 +10,6 @@ set "OTHER_SCRIPT=%userprofile%\sauce\batch_scripts\fire_wall.bat"
 
 :: functional variables
 set "currentDirectory=%~dp0"
-set "currentDirectory=%currentDirectory:~0,-1%"
-set "currentDirectory=%currentDirectory:"=%"
 set "file="
 set "loop="
 
@@ -36,10 +34,12 @@ if "%~1"=="" (
     set "file=%~1"
     goto check
 )
-::OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
+
 CLS
 
-:: get variables
+
+
 :getVars
 set "file="
 :: sets loop to happen if drag and drop is not happening
@@ -47,11 +47,21 @@ set "loop=1"
 call :info Press Enter to process all %extensions%s in the current directory
 set /p "file=::"
 if defined file (
-	call :check
-    goto end
-)
+	call :file_or_folder %file%
+	if "%file_or_folder%"=="folder" (
+		set "currentDirectory=%file%"
+		goto directory_processing
+	) else if "%file_or_folder%"=="file" (
+		call :check
+    	goto end
+	)	)
+
 
 :directory_processing
+set "currentDirectory=%currentDirectory:"=%"
+if "%currentDirectory:~-1%"=="\"(
+	set "currentDirectory=%currentDirectory:~0,-1%"
+)
 :: check if the current directory has any file
 cd %currentDirectory%
 for %%j in (%extensions%) do (
@@ -85,6 +95,7 @@ if %errorlevel% equ 2 (
 			@REM call :main %%~i
 			if errorlevel 0 set /a "ok_count+=1"
 		))
+		
 	:: show number of files installed successfully
 	call :info done. !ok_count! files processed successfully.
 	endlocal
@@ -174,6 +185,22 @@ for /L %%a in (1,1,10) do (
             for /f "tokens=1" %%c in ("!filename:~%%b!") do (
                 endlocal & set "truncate_str=%%c"
             )   )   )   ) >nul 2>&1
+exit /b
+
+
+:file_or_folder
+setlocal enabledelayedexpansion
+set "b=%1"
+set "b=%b:"=%"
+for %%I in ("%b%") do (
+    set "attrs=%%~aI"
+    echo !attrs!
+    REM Check if the first attribute is 'd' (directory)
+    if "!attrs:~0,1!" == "d" (
+        endlocal & set "file_or_folder=folder" 
+    ) else (
+        endlocal & set "file_or_folder=file"
+    )   )
 exit /b
 
 
