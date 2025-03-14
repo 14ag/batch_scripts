@@ -150,7 +150,7 @@ for /f "tokens=1" %%d in ("device_%id%") do (
 		for /f "tokens=2 delims==" %%f in ("%%e") do (
 			set x=%%f
 		)
- )
+ 	)
 )
 
 

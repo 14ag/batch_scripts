@@ -156,7 +156,7 @@ This repository contains a collection of scripts that are passively maintained. 
 
 ### measures.bat
 
-*Description:* Collects and displays system performance metrics or measu::ents.
+*Description:* Collects and displays system performance metrics or measurements.
 
 *Note:* Some scripts, such as `wsl.txt` and `gateway.vbs`, are not actively maintained and may require updates or modifications for current use.
 

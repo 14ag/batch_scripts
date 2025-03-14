@@ -1,28 +1,28 @@
 @echo off
 
-:: set variables
+:: user variables
 setlocal
-set "extensions=*.exe"
+set "extensions=.exe"
+set "OTHER_SCRIPT=%userprofile%\sauce\batch_scripts\fire_wall.bat"
+
+
+
+:: functional variables
 set "currentDirectory=%~dp0"
 set "currentDirectory=%currentDirectory:~0,-1%"
 set "currentDirectory=%currentDirectory:"=%"
-set "errors="
-set "infos="
 set "files="
 set "loop="
-set "OTHER_SCRIPT=%userprofile%\sauce\batch_scripts\fire_wall.bat"
 
 where %OTHER_SCRIPT% >nul 2>&1
 if errorlevel 1 (
-    set "errors=a callback script is required"
-    call error
+    call :error a callback script is required
     exit /b 1
 )
 
 :: drag and drop
 if "%~1"=="" (
-    set "infos=you can Drag and drop a folder onto this script."
-    call :info
+    call :info you can Drag and drop a folder onto this script.
     goto getVars
 ) else (
     set "files=%~1"
@@ -33,26 +33,23 @@ if "%~1"=="" (
 :getVars
 :: sets loop to happen if drag and drop is not happening
 set "loop=1"
-set "infos=Press Enter to process all %extensions%s in the current directory"
-call :info
+call :info Press Enter to process all %extensions%s in the current directory
 set /p "files=::"
 :: check if the current directory has any files
 if "%files: =%"=="" (
 cd %currentDirectory%
     dir /b %extensions% 2>nul | find "." >nul
     if errorlevel 1 (
-        set "errors=No compatible files found in current directory."
-        goto error
+        call :error No compatible files found in current directory.
     )
     cls
-    set "infos=Found the following files:"
-    call :info
+    call :info Found the following files:
     for /r "%currentDirectory%" %%i in (%extensions%) do (
         echo %%~nxi
     )
     :: confirm install all files in the current directory
     call :resetChoice
-    CHOICE /C yn /N /M "continue? y = Yes, n = No"
+    CHOICE /C yn /N /M "continue? [Y]es, [N]o"
     if %errorlevel% equ 2 (
         pause
         goto :getVars
@@ -61,20 +58,17 @@ cd %currentDirectory%
         set "error_count=0"
         :: install all files in the current directory
         for /r "%currentDirectory%" %%i in (%extensions%) do (
-            set "files="%%~i""
-            call :install
+            call :main "%%~i"
             if errorlevel 0 set /a "ok_count+=1"
         )
         :: show number of files installed successfully
-        set "infos=done. %ok_count% files processed successfully."
-        call :info
+        call :info done. %ok_count% files processed successfully.
         goto end
     )
 ) else (
     call :check
-    goto :end
+    goto end
 )
-
 
 :check
 :: handle quotes in the file path omg
@@ -83,40 +77,50 @@ for %%i in ("%files:"=%") do (
     )
 :: validate file type
 if exist "%files%" (
-    if /i not "%files:~-5%"==".appx" (
-        if /i not "%files:~-5%"==".msix" (
-            if /i not "%files:~-11%"==".appxbundle" (
-                set "errors=not a supported file."
-                goto error
-            )
-        )
-    )
+    ::this loop returns the files
+    for %%i in (%extensions%) do (
+        for /r "%currentDirectory%" %%j in (%extensions%) do (
+            call :truncate_str %%i %%~nxj
+            if /i not "%%i"=="%truncate_str%" (
+                call :error not a supported file.
+            )   )   )
 ) else (
-    set "errors=file not found."
-    goto error
+    call :error file not found.
 )
 
-goto install
+call :main "%files%"
+exit /b
 
 
-:install
+
+
+
+
+::---------------------------------------------------------------------------------------------------
+:main
+set "a=%1"
 cls
-set "infos=Installing '%files%'..."
-call :info
-:: Install the file using PowerShell command 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "try { Add-AppxPackage -Path '%files%' -ForceDeployment -ErrorAction Stop } catch { exit 1 }" >nul 2>&1
+call :info Installing '%files%'...
+
+
+
+
+
+
 
 :: feedback on install
 if errorlevel 1 (
-    set "errors=file installation failed. Check for error messages above."
-    call :error
+    call :error failed. Check for error messages above.
 ) else (
-    set "infos= ok."
-    call :info
-    echo.
-    pause
+    call :info ok.
     exit /b 0
 )
+::---------------------------------------------------------------------------------------------------
+
+
+
+
+
 
 :: reset errorlevel for correct choice
 :resetChoice
@@ -124,8 +128,7 @@ exit /b 0
 
 :: error handling
 :error
-echo error: %errors%
-set "errors="
+echo error: %*
 pause
 cls
 goto getVars
@@ -133,10 +136,23 @@ goto getVars
 :: info handling
 :info
 echo.
-echo info: %infos%
-set "infos="
+echo info: %*
 echo.
 exit /b 0
+
+:: call :truncate_str file.name extension
+:: returns extension of file.name in variable [truncate_str]
+:truncate_str
+setlocal enabledelayedexpansion
+set control_extension=%1
+set filename=%*
+for /L %%a in (1,1,10) do (
+    if "!control_extension:~%%a!"=="" (
+        for /f "tokens=1" %%b in ("-%%a") do (
+            for /f "tokens=1" %%c in ("!filename:~%%b!") do (
+                endlocal & set "truncate_str=%%c"
+            )   )   )   )
+exit /b
 
 :: loops if drag and drop is not happening
 :end
