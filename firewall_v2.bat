@@ -1,6 +1,6 @@
 ::file processing template
 ::---------------------------------------------------------------------------------------------------
-@echo off
+REM @echo off
 
 :: user variables
 setlocal
@@ -141,7 +141,7 @@ if %errorlevel% equ 2 (
 
 
 :check
-REM cls
+cls
 set "file=%file:"=%"
 setlocal enabledelayedexpansion
 :: validate file type
@@ -180,13 +180,13 @@ if "%in_out_all%"=="all" (
 
 :main
 set "program_full_path=%*"
-call :info Processing %program_full_path%...
+REM call :info Processing %program_full_path%...
 for %%i in ("%program_full_path:"=%") do set "rule_name=%%~ni"
 
 
 ::test
 REM echo name="%rule_name%" program="%program_full_path:"=%"
-netsh advfirewall firewall add rule name="%rule_name%" dir=%dir% program="%program_full_path:"=%" profile=any action=%allow_block% enable=yes >nul 2>&1
+netsh advfirewall firewall add rule name="%rule_name%" dir=%in_out_all% program="%program_full_path:"=%" profile=any action=%allow_block% enable=yes
 
 :: feedback on processing
 
