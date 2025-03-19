@@ -4,7 +4,7 @@ REM @echo off
 
 :: user variables
 setlocal
-set "extensions=.exe"
+set "extensions=.txt"
 :: callback script
 set "OTHER_SCRIPT="
 
@@ -129,7 +129,7 @@ if %errorlevel% equ 2 (
 	:: install each file in the current directory
 	for %%j in (%extensions%) do (
 		for /r "%currentDirectory%" %%i in (*%%j) do (
-		    call :subRoutine "%%~i"
+		    call :interface "%%~i"
 			if errorlevel 0 set /a "ok_count+=1"
 		)   )
 		
@@ -156,7 +156,17 @@ for %%k in ("%file%") do (
 			call :error not a supported file.
 			)	)	)
 endlocal
-call :subRoutine "%file%"
+call :interface "%file%"
+exit /b
+
+
+
+
+:interface
+echo %*
+exit /b 0
+
+call :subRoutine "%*"
 exit /b
 
 
