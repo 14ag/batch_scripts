@@ -39,30 +39,12 @@ if errorlevel 1 (
 :skip
 
 :: Validate allow_block parameter
-set "items=0"
-set "count=0"
-for %%i in (allow,block) do (
-	if not "%allow_block%"=="%%i" (
-		set /a count+=1
-	)
-	set /a items+=1
-)
-if "%count%" geq "%items%" goto usage
-
+call :validate "allow block" %allow_block%
+if "%validate%"="false" goto usage
 
 :: Validate in_out_all parameter
-set "items=0"
-set "count=0"
-for %%i in (in,out,all) do (
-	if not "%in_out_all%"=="%%i" (
-		set /a count+=1
-	)
-	set /a items+=1
-)
-if "%count%" geq "%items%" goto usage
-
-goto file_or_folder0
-
+call :validate "in out all" %in_out_all%
+if "%validate%"="false" goto usage
 
 
 :getVars
@@ -245,12 +227,12 @@ goto getVars
 :: reset errorlevel for correct choice
 :reset_choice
 exit /b 0
-exit /b 0
 
 
 :: error handling
 :error
-echo error: %* 
+set "errorlevel=1"
+echo error: %*
 pause
 cls
 goto getVars
@@ -266,6 +248,8 @@ exit /b 0
 
 :: call :truncate_str file.name extension
 :: returns extension of file.name in variable [truncate_str]
+:: file.name is the name of the file with extension
+:: extension is the extension to be truncated
 :truncate_str
 setlocal enabledelayedexpansion
 set control_extension=%1
@@ -279,6 +263,9 @@ for /L %%a in (1,1,10) do (
 exit /b
 
 
+::call :file_or_folder file_or_folder
+:: returns "file" or "folder" in variable [file_or_folder]
+:: file_or_folder is the path to the file or folder
 :file_or_folder
 setlocal enabledelayedexpansion
 set "b=%1"
@@ -294,6 +281,28 @@ for %%I in ("%b%") do (
 exit /b
 
 
+:: call :validate "control" %items_to_test%
+:: returns true or false in variable [validate]
+:: control is a string of items separated by spaces
+:validate
+set "control=%1"
+set "items_to_test=%2"
+set "items=0"
+set "count=0"
+for %%i in (%control:"=%) do (
+	if not "%items_to_test%"=="%%i" (
+		set /a count+=1
+	)
+	set /a items+=1
+)
+if "%count%" geq "%items%" (
+	set "validate=false"
+) else (
+	set "validate=true"
+)
+exit /b 0
+
+
 :: loops if drag and drop is not happening
 :end
 if "%loop%"=="1" (
@@ -301,7 +310,7 @@ if "%loop%"=="1" (
     cls
     goto getVars
 ) else (
-    exit /b 0
+    exit /b %errorlevel%
 )
 
 endlocal
