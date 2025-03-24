@@ -65,7 +65,9 @@ if defined file (
 	) else if "%file_or_folder%"=="file" (
         if not defined allow_block call :in_out_all
         if not defined allow_block call :allow_block
-		call :check
+		call :check "%file%" "%extensions%"
+		if errorlevel 1 goto :getvars
+		call :subRoutine "%file%"
     	goto end
 	)	) else (
 		if "%loop%"=="0" (
@@ -111,7 +113,7 @@ if %errorlevel% equ 2 (
 	:: install each file in the current directory
 	for %%j in (%extensions%) do (
 		for /r "%currentDirectory%" %%i in (*%%j) do (
-		    call :interface "%%~i"
+		    call :subRoutine "%%~i"
 			if errorlevel 0 set /a "ok_count+=1"
 		)   )
 		
@@ -120,37 +122,6 @@ if %errorlevel% equ 2 (
 	endlocal
 	goto end
 )
-
-
-:check
-cls
-set "file=%file:"=%"
-setlocal enabledelayedexpansion
-:: validate file type
-if not exist "%file%" (
-	call :error file not found.
-)
-::this loop each extension
-for %%k in ("%file%") do (
-	for %%j in (%extensions%) do (
-		call :truncate_str %%j %%~nxk
-		if /i not "%%j"=="!truncate_str!" (
-			call :error not a supported file.
-			)	)	)
-endlocal
-call :interface "%file%"
-exit /b
-
-
-
-
-:interface
-echo %*
-exit /b 0
-
-call :subRoutine "%*"
-exit /b
-
 
 
 
@@ -177,44 +148,13 @@ for %%i in ("%program_full_path:"=%") do set "rule_name=%%~ni"
 
 
 ::test
-REM echo name="%rule_name%" program="%program_full_path:"=%"
-netsh advfirewall firewall add rule name="%rule_name%" dir=%in_out_all% program="%program_full_path:"=%" profile=any action=%allow_block% enable=yes
+ echo   dir=%in_out_all%  action=%allow_block%  name="%rule_name%"
+ 
+REM netsh advfirewall firewall add rule name="%rule_name%" dir=%in_out_all% program="%program_full_path:"=%" profile=any action=%allow_block% enable=yes
 
 :: feedback on processing
-
-::---------------------------------------------------------------------------------------------------
 exit /b %errorlevel%
-
-
-:in_out_all
-call :reset_choice
-echo.
-echo 1. in
-echo 2. out
-echo 3. all
-choice /c 123 /n /m "Press 1 or 2 or 3: "
-if errorlevel 3 (
-    set "in_out_all=all"
-) else if errorlevel 2 (
-    set "in_out_all=out"
-) else if errorlevel 1 (
-    set "in_out_all=in"
-)
-exit /b 0
-
-
-:allow_block
-call :reset_choice
-echo.
-echo 1. allow
-echo 2. block
-choice /c 12 /n /m "Press 1 or 2: "
-if errorlevel 2 (
-    set "allow_block=block"
-) else if errorlevel 1 (
-    set "allow_block=allow"
-)
-exit /b 0
+::---------------------------------------------------------------------------------------------------
 
 
 :: Display usage information and instructions
@@ -223,6 +163,33 @@ cls
 call :info Usage: %~nx0 "path\to\program.exe" ^[allow^|block^] ^[in^|out^|all^]
 goto getVars
 
+
+:in_out_all
+echo.
+call :selector "echo in & echo out & echo all"
+set "in_out_all=%selector%"
+exit /b 0
+
+
+:allow_block
+echo.
+call :selector "echo allow & echo block"
+set "allow_block=%selector%"
+exit /b 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+:::::::::::::::::::::::::::::::::::::::::::helper functions::::::::::::::::::::::::::::::::::::::::::::::
 
 :: reset errorlevel for correct choice
 :reset_choice
@@ -303,6 +270,61 @@ if "%count%" geq "%items%" (
 exit /b 0
 
 
+:: call :selector "[command that outputs list eg echo a & echo b & echo c]"
+:: & is just a command separator, while && is a conditional operator
+:selector
+echo.
+setlocal enabledelayedexpansion
+set command=%* >nul
+set "i=0"
+set "selector="
+set "choicelist="
+:: Loop through a list, act on each line
+for /f "eol=L tokens=1" %%a in ('!command!') do (
+    set /a i+=1
+    :: Create dynamic variable names (_1, _2, etc.)
+    for %%b in (_!i!) do (
+        set "%%b=%%a"
+        set "choicelist=!choicelist!!i!"
+        echo !i!. %%a
+    )   )
+
+call :reset_choice
+choice /c %choicelist% /n /m "pick option btn %choicelist:~0,1% and %choicelist:~-1,1% ::"
+for /L %%c in (%choicelist:~-1,1%,-1,%choicelist:~0,1%) do (
+    if errorlevel %%c (
+    for %%d in (!_%%c!) do (
+            endlocal & set "selector=%%d"
+            goto :break
+    )   )   )
+:break
+exit /b
+
+
+::tests to find out if filename [%1] has any of these extensions [%2]
+:check
+cls
+call :reset_choice
+set "filename=%1"
+set "extensions=%2"
+set "filename=%filename:"=%"
+set "extensions=%extensions:"=%"
+setlocal enabledelayedexpansion
+:: validate file type
+if not exist "%filename%" (
+	call :error file not found.
+)
+::this loop each extension
+for %%k in ("%filename%") do (
+	for %%j in (%extensions%) do (
+		call :truncate_str %%j %%~nxk
+		if /i not "%%j"=="!truncate_str!" (
+			call :error not a supported file.
+			)	)	)
+endlocal
+exit /b %errorlevel%
+
+
 :: loops if drag and drop is not happening
 :end
 if "%loop%"=="1" (
@@ -310,7 +332,7 @@ if "%loop%"=="1" (
     cls
     goto getVars
 ) else (
-    exit /b %errorlevel%
+    endlocal & exit /b %errorlevel%
 )
 
 endlocal
