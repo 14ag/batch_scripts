@@ -1,6 +1,6 @@
 ::file processing template
 ::---------------------------------------------------------------------------------------------------
-REM @echo off
+@echo off
 
 :: user variables
 setlocal
@@ -11,40 +11,27 @@ set "OTHER_SCRIPT="
 
 
 :: functional variables
+set "loop=0"
 set "currentDirectory=%~dp0"
+set "file=%~1"
 set "allow_block=%~2"
 set "in_out_all=%~3"
-set "file=%~1"
-set "loop="
 
-goto skip
-:: validate callback script exists and is executable
-if not defined OTHER_SCRIPT (
-	echo :error Callback script not specified
-	pause
-	exit /b 1
-)
-for %%F in ("%OTHER_SCRIPT%") do (
-	set "dpF=%%~dpF"
-	set "nxF=%%~nxF"
-)
-where /r "%dpF:~0,-1%" "%nxF%" >nul 2>&1
-if errorlevel 1 (
-	echo :error Callback script '%OTHER_SCRIPT%' not found or not executable
-	pause
-	exit /b 1
-) else (
-	cls
-)
-:skip
 
+:: validate callback script exists and is executable function goes here
+
+
+::file validation
+if "%file%"=="" call usage & goto getFile
 :: Validate allow_block parameter
 call :validate "allow block" %allow_block%
-if "%validate%"="false" goto usage
+if "%validate%"=="false" goto usage & goto file_or_folder0
 
 :: Validate in_out_all parameter
 call :validate "in out all" %in_out_all%
-if "%validate%"="false" goto usage
+if "%validate%"=="false" goto usage & goto file_or_folder0
+
+goto fileProcessing
 
 
 :getVars
@@ -53,26 +40,25 @@ set "loop=1"
 set "allow_block="
 set "in_out_all="
 set "file="
+
+:getFile
 call :info Press Enter to process all files with the following extensions (%extensions%) in the current directory
 set /p "file=::"
+if not defined file (
+	if "%loop%"=="0" (
+        goto usage
+    )	)
 
 :file_or_folder0
-if defined file (
-	call :file_or_folder %file%
-	if "%file_or_folder%"=="folder" (
-		set "currentDirectory=%file%"
-		goto directory_processing
-	) else if "%file_or_folder%"=="file" (
-        if not defined allow_block call :in_out_all
-        if not defined allow_block call :allow_block
-		call :check "%file%" "%extensions%"
-		if errorlevel 1 goto :getvars
-		call :subRoutine "%file%"
-    	goto end
-	)	) else (
-		if "%loop%"=="0" (
-            goto usage
-        )    )
+call :file_or_folder %file%
+if "%file_or_folder%"=="folder" (
+	set "currentDirectory=%file%"
+	goto directory_processing
+) else if "%file_or_folder%"=="file" (
+	if not defined allow_block call :in_out_all
+	if not defined allow_block call :allow_block
+	goto fileProcessing
+)
 
 
 :directory_processing
@@ -91,7 +77,6 @@ if %found_files% equ 0 (
     goto getVars
 )
 
-cls
 call :in_out_all
 call :allow_block
 call :info the following files will be %allow_block%ed:
@@ -124,44 +109,46 @@ if %errorlevel% equ 2 (
 )
 
 
+:fileProcessing
+call :check "%file%" "%extensions%"
+if errorlevel 1 goto :getvars
+call :subRoutine "%file%"
+goto end
+
 
 ::---------------------------------------------------------------------------------------------------
 :subRoutine
 ::---------------------------------------------------------------------------------------------------
 set "x=%*"
-if "%in_out_all%"=="all" (
-    set "in_out_all=out"
-    call :main %x%
-    set "in_out_all=in"
-    call :main %x% 
-    goto :eof
-	) else (
+if "%in_out_all%" neq "all" (
+	call :main %x%
+) else if "%in_out_all%" equ "all" (
+		set "in_out_all=in"
 		call :main %x%
-		goto :eof
+		set "in_out_all=out"
+		call :main %x%
+		set "in_out_all=all"
 	)
+exit /b %errorlevel%
 
 
 :main
 set "program_full_path=%*"
 REM call :info Processing %program_full_path%...
 for %%i in ("%program_full_path:"=%") do set "rule_name=%%~ni"
-
-
 ::test
- echo   dir=%in_out_all%  action=%allow_block%  name="%rule_name%"
- 
+echo   dir=!in_out_all!  action=%allow_block%  name="%rule_name%"
 REM netsh advfirewall firewall add rule name="%rule_name%" dir=%in_out_all% program="%program_full_path:"=%" profile=any action=%allow_block% enable=yes
-
-:: feedback on processing
-exit /b %errorlevel%
+exit /b
 ::---------------------------------------------------------------------------------------------------
 
 
 :: Display usage information and instructions
 :usage
 cls
+set "loop=1"
 call :info Usage: %~nx0 "path\to\program.exe" ^[allow^|block^] ^[in^|out^|all^]
-goto getVars
+exit /b
 
 
 :in_out_all
@@ -306,7 +293,6 @@ exit /b
 
 ::tests to find out if filename [%1] has any of these extensions [%2]
 :check
-cls
 call :reset_choice
 set "filename=%1"
 set "extensions=%2"
