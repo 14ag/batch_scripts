@@ -77,9 +77,15 @@ if %found_files% equ 0 (
     goto getVars
 )
 
+
+
 call :in_out_all
 call :allow_block
 call :info the following files will be %allow_block%ed:
+
+
+
+
 for %%j in (%extensions%) do (
 	dir /b *%%j
 )
