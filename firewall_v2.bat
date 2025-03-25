@@ -23,13 +23,14 @@ set "in_out_all=%~3"
 
 ::file validation
 if "%file%"=="" call usage & goto getFile
+
 :: Validate allow_block parameter
 call :validate "allow block" %allow_block%
-if "%validate%"=="false" goto usage & goto file_or_folder0
+if "%validate%"=="false" call usage & goto file_or_folder0
 
 :: Validate in_out_all parameter
 call :validate "in out all" %in_out_all%
-if "%validate%"=="false" goto usage & goto file_or_folder0
+if "%validate%"=="false" call usage & goto file_or_folder0
 
 goto fileProcessing
 
