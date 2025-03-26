@@ -1,3 +1,5 @@
+
+[![wakatime](https://wakatime.com/badge/github/14ag/batch_scripts.svg)](https://wakatime.com/badge/github/14ag/batch_scripts)
 # Overview of Batch Scripts Repository
 
 This repository contains a collection of scripts that are passively maintained. Below is a structured overview of each file and directory, detailing their functions and purposes.
