@@ -35,6 +35,7 @@ goto fileProcessing
 
 
 :getVars
+cls
 :: sets loop to happen if drag and drop is not happening
 set "loop=1"
 set "allow_block="
@@ -42,7 +43,8 @@ set "in_out_all="
 set "file="
 
 :getFile
-call :info Press Enter to process all files with the following extensions (%extensions%) in the current directory
+if "%loop%"=="1" call :info Press Enter to process all files with the extensions "%extensions%" in the current directory
+if "%loop%"=="0" call :info Drag the file or folder to be processed here
 set /p "file=::"
 if not defined file if "%loop%"=="0" (
         call usage & goto getVars
@@ -63,6 +65,7 @@ if "%file_or_folder%"=="folder" (
 
 
 :directory_processing
+cls
 set "currentDirectory=%currentDirectory:"=%"
 if "%currentDirectory:~-1%"=="\" (
 	set "currentDirectory=%currentDirectory:~0,-1%"
@@ -75,7 +78,7 @@ for %%j in (%extensions%) do (
 )
 if %found_files% equ 0 (
     call :error No compatible files found in "%currentDirectory%"
-    goto getVars
+    goto :getVars
 )
 
 
@@ -83,36 +86,35 @@ if %found_files% equ 0 (
 call :in_out_all
 call :allow_block
 call :info the following files will be %allow_block%ed:
-
-
-
-
 for %%j in (%extensions%) do (
 	dir /b *%%j
 )
 
+
+
 setlocal enabledelayedexpansion
 :: confirm install all files in the current directory
-call :reset_choice
 echo.
+call :reset_choice
 CHOICE /C yn /N /M "\\\\\\\\ continue? [Y]es, [N]o ///////////"
 if %errorlevel% equ 2 (
 	cls
 	goto :getVars
 ) else if %errorlevel% equ 1 (
 	set "ok_count=0"
-	set "error_count=0"
+	set "all_count=0"
 	:: install each file in the current directory
 	for %%j in (%extensions%) do (
 		for /r "%currentDirectory%" %%i in (*%%j) do (
 		    call :subRoutine "%%~i"
+			set /a "all_count+=1"
 			if errorlevel 0 set /a "ok_count+=1"
 		)   )
 		
 	:: show number of files installed successfully
-	call :info done. !ok_count! files processed successfully.
+	call :info done. !ok_count!/!all_count! files processed.
 	endlocal
-	goto end
+	goto :end
 )
 
 
@@ -120,7 +122,8 @@ if %errorlevel% equ 2 (
 call :check "%file%" "%extensions%"
 if errorlevel 1 goto :getvars
 call :subRoutine "%file%"
-goto end
+if errorlevel 0 call :info done. else 
+goto :end
 
 
 ::---------------------------------------------------------------------------------------------------
@@ -155,6 +158,7 @@ exit /b
 cls
 set "loop=1"
 call :info Usage: %~nx0 "path\to\program.exe" ^[allow^|block^] ^[in^|out^|all^]
+pause
 exit /b
 
 
