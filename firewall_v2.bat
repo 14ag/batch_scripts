@@ -9,7 +9,6 @@ set "extensions=.txt"
 set "OTHER_SCRIPT="
 
 
-
 :: functional variables
 set "loop=0"
 set "currentDirectory=%~dp0"
@@ -22,15 +21,15 @@ set "in_out_all=%~3"
 
 
 ::file validation
-if "%file%"=="" call usage & goto getFile
+if "%file%"=="" call :usage & goto getFile
 
 :: Validate allow_block parameter
 call :validate "allow block" %allow_block%
-if "%validate%"=="false" call usage & goto file_or_folder0
+if "%validate%"=="false" call :usage & goto file_or_folder0
 
 :: Validate in_out_all parameter
 call :validate "in out all" %in_out_all%
-if "%validate%"=="false" call usage & goto file_or_folder0
+if "%validate%"=="false" call :usage & goto file_or_folder0
 
 goto fileProcessing
 
@@ -45,10 +44,9 @@ set "file="
 :getFile
 call :info Press Enter to process all files with the following extensions (%extensions%) in the current directory
 set /p "file=::"
-if not defined file (
-	if "%loop%"=="0" (
-        goto usage
-    )	)
+if not defined file if "%loop%"=="0" (
+        call usage & goto getVars
+    )	
 
 :file_or_folder0
 call :file_or_folder %file%
@@ -56,8 +54,10 @@ if "%file_or_folder%"=="folder" (
 	set "currentDirectory=%file%"
 	goto directory_processing
 ) else if "%file_or_folder%"=="file" (
+
 	if not defined allow_block call :in_out_all
 	if not defined allow_block call :allow_block
+
 	goto fileProcessing
 )
 
