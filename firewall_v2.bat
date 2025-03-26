@@ -12,26 +12,35 @@ set "OTHER_SCRIPT="
 :: functional variables
 set "loop=0"
 set "currentDirectory=%~dp0"
-set "file=%~1"
+set "_path=%~1"
 set "allow_block=%~2"
 set "in_out_all=%~3"
+set "empty_var="
 
 
 :: validate callback script exists and is executable function goes here
 
 
-::file validation
-if "%file%"=="" call :usage & goto getFile
 
 :: Validate allow_block parameter
 call :validate "allow block" %allow_block%
-if "%validate%"=="false" call :usage & goto file_or_folder0
+if "%validate%"=="false" set "allow_block="
 
 :: Validate in_out_all parameter
 call :validate "in out all" %in_out_all%
-if "%validate%"=="false" call :usage & goto file_or_folder0
+if "%validate%"=="false" set "in_out_all="
 
-goto fileProcessing
+::check if theres need to  show usage in single instance mode
+call :validate "'%in_out_all%' '%allow_block%' '%_path%'" '%empty_var%'
+if "%validate%"=="true" call :usage
+
+::file validation
+if "%_path%"=="" (
+	set "loop=1" 
+	goto :getFile
+) 
+
+goto :file_or_folder0
 
 
 :getVars
@@ -40,56 +49,61 @@ cls
 set "loop=1"
 set "allow_block="
 set "in_out_all="
-set "file="
 
 :getFile
-if "%loop%"=="1" call :info Press Enter to process all files with the extensions "%extensions%" in the current directory
-if "%loop%"=="0" call :info Drag the file or folder to be processed here
-set /p "file=::"
-if not defined file if "%loop%"=="0" (
-        call usage & goto getVars
-    )	
+call :info enter the file or folder to be processed here or
+call :info Press Enter to process all files with the extensions "%extensions%" in the current directory
+set "_path="
+set /p "_path=::"
+if not defined _path (
+	set "_path=%currentDirectory%"
+)	
 
 :file_or_folder0
-call :file_or_folder %file%
+set "workingDirectory="
+set "file="
+call :file_or_folder %_path%
 if "%file_or_folder%"=="folder" (
-	set "currentDirectory=%file%"
-	goto directory_processing
+	set "workingDirectory=%_path%"
+	goto :directory_processing
 ) else if "%file_or_folder%"=="file" (
-
-	if not defined allow_block call :in_out_all
-	if not defined allow_block call :allow_block
-
-	goto fileProcessing
-)
-
+	set "file=%_path%"
+	goto :fileProcessing
+) else if "%file_or_folder%"=="" (
+	call :error "...%_path:~-10%" not found
+	goto :getFile
+) else goto :getfile
 
 :directory_processing
 cls
-set "currentDirectory=%currentDirectory:"=%"
-if "%currentDirectory:~-1%"=="\" (
-	set "currentDirectory=%currentDirectory:~0,-1%"
+call :info "%workingDirectory%" in use
+set "workingDirectory=%workingDirectory:"=%"
+if "%workingDirectory:~-1%"=="\" (
+	set "workingDirectory=%workingDirectory:~0,-1%"
 )
+
 :: check for compatible files
-cd %currentDirectory%
+cd %workingDirectory%
 set "found_files=0"
 for %%j in (%extensions%) do (
     dir /b *%%j 2>nul | find "." >nul && set /a "found_files+=1"
 )
 if %found_files% equ 0 (
-    call :error No compatible files found in "%currentDirectory%"
-    goto :getVars
+    call :error No compatible files found in "...%workingDirectory:~-10%"
+	pause
+	cls
+    goto :getFile
 )
 
 
 
-call :in_out_all
-call :allow_block
+if not defined in_out_all call :in_out_all
+if not defined allow_block call :allow_block
+cls
 call :info the following files will be %allow_block%ed:
 for %%j in (%extensions%) do (
 	dir /b *%%j
 )
-
 
 
 setlocal enabledelayedexpansion
@@ -101,11 +115,12 @@ if %errorlevel% equ 2 (
 	cls
 	goto :getVars
 ) else if %errorlevel% equ 1 (
+	cls
 	set "ok_count=0"
 	set "all_count=0"
 	:: install each file in the current directory
 	for %%j in (%extensions%) do (
-		for /r "%currentDirectory%" %%i in (*%%j) do (
+		for /r "%workingDirectory%" %%i in (*%%j) do (
 		    call :subRoutine "%%~i"
 			set /a "all_count+=1"
 			if errorlevel 0 set /a "ok_count+=1"
@@ -115,14 +130,20 @@ if %errorlevel% equ 2 (
 	call :info done. !ok_count!/!all_count! files processed.
 	endlocal
 	goto :end
-)
+) else exit /b 1
 
 
 :fileProcessing
+if not defined in_out_all call :in_out_all
+if not defined allow_block call :allow_block
 call :check "%file%" "%extensions%"
-if errorlevel 1 goto :getvars
+if "%check%"=="fail" goto :getFile
 call :subRoutine "%file%"
-if errorlevel 0 call :info done. else 
+if errorlevel 0 (
+	call :info \\\\\\\ done ///////
+	) else if not errorlevel 0 (
+		call :error /////// failed \\\\\\\
+		)
 goto :end
 
 
@@ -147,19 +168,18 @@ set "program_full_path=%*"
 REM call :info Processing %program_full_path%...
 for %%i in ("%program_full_path:"=%") do set "rule_name=%%~ni"
 ::test
-echo   dir=!in_out_all!  action=%allow_block%  name="%rule_name%"
+echo.
+echo \\\\\\\ dir=%in_out_all%  action=%allow_block%  name="%rule_name%" ///////
 REM netsh advfirewall firewall add rule name="%rule_name%" dir=%in_out_all% program="%program_full_path:"=%" profile=any action=%allow_block% enable=yes
-exit /b
+exit /b %errorlevel%
 ::---------------------------------------------------------------------------------------------------
 
 
 :: Display usage information and instructions
 :usage
-cls
-set "loop=1"
-call :info Usage: %~nx0 "path\to\program.exe" ^[allow^|block^] ^[in^|out^|all^]
+call :info "Usage: %~nx0 'path\to\program.exe' [allow|block] [in|out|all]"
 pause
-exit /b
+exit /b 0
 
 
 :in_out_all
@@ -196,17 +216,16 @@ exit /b 0
 
 :: error handling
 :error
+Echo 1n| CHOICE /N >nul 2>&1 & rem BEL
 echo error: %*
 pause
-cls
-goto getVars
+exit /b 1
 
 
 :: info handling
 :info
 echo.
 echo info: %*
-echo.
 exit /b 0
 
 
@@ -215,48 +234,51 @@ exit /b 0
 :: file.name is the name of the file with extension
 :: extension is the extension to be truncated
 :truncate_str
+set "truncate_str="
 setlocal enabledelayedexpansion
-set control_extension=%1
-set filename=%2
+set "control_extension=%1"
+set "filename=%2"
 for /L %%a in (1,1,10) do (
     if "!control_extension:~%%a!"=="" (
         for /f "tokens=1" %%b in ("-%%a") do (
             for /f "tokens=1" %%c in ("!filename:~%%b!") do (
                 endlocal & set "truncate_str=%%c"
             )   )   )   ) >nul 2>&1
-exit /b
+exit /b 0
 
 
 ::call :file_or_folder file_or_folder
 :: returns "file" or "folder" in variable [file_or_folder]
 :: file_or_folder is the path to the file or folder
 :file_or_folder
+set "file_or_folder="
 setlocal enabledelayedexpansion
 set "b=%1"
 set "b=%b:"=%"
-for %%I in ("%b%") do (
-    set "attrs=%%~aI"
-    REM Check if the first attribute is 'd' (directory)
-    if "!attrs:~0,1!" == "d" (
-        endlocal & set "file_or_folder=folder" 
-    ) else (
-        endlocal & set "file_or_folder=file"
-    )   )
-exit /b
+if exist "%b%" (
+	for %%I in ("%b%") do (
+		set "attrs=%%~aI"
+		REM Check if the first attribute is 'd' (directory)
+		if "!attrs:~0,1!" == "d" (
+			endlocal & set "file_or_folder=folder" 
+		) else (
+			endlocal & set "file_or_folder=file"
+		)   )
+)
+exit /b 0
 
 
 :: call :validate "control" %items_to_test%
 :: returns true or false in variable [validate]
 :: control is a string of items separated by spaces
 :validate
+set "validate="
 set "control=%1"
 set "items_to_test=%2"
 set "items=0"
 set "count=0"
 for %%i in (%control:"=%) do (
-	if not "%items_to_test%"=="%%i" (
-		set /a count+=1
-	)
+	if not "%items_to_test%"=="%%i" set /a count+=1
 	set /a items+=1
 )
 if "%count%" geq "%items%" (
@@ -271,10 +293,10 @@ exit /b 0
 :: & is just a command separator, while && is a conditional operator
 :selector
 echo.
+set "selector="
 setlocal enabledelayedexpansion
 set command=%* >nul
 set "i=0"
-set "selector="
 set "choicelist="
 :: Loop through a list, act on each line
 for /f "eol=L tokens=1" %%a in ('!command!') do (
@@ -292,37 +314,41 @@ for /f "eol=L tokens=1" %%a in ('!command!') do (
 
 call :reset_choice
 choice /c %choicelist% /n /m "pick option btn %choicelist:~0,1% and %choicelist:~-1,1% ::"
-for /L %%c in (%choicelist:~-1,1%,-1,%choicelist:~0,1%) do (
+for /L %%c in (%choicelist:~-1%,-1,%choicelist:~0,1%) do (
     if errorlevel %%c (
     for %%d in (!_%%c!) do (
             endlocal & set "selector=%%d"
             goto :break
     )   )   )
 :break
-exit /b
+exit /b 0
 
 
 ::tests to find out if filename [%1] has any of these extensions [%2]
 :check
-call :reset_choice
+set "check="
 set "filename=%1"
 set "extensions=%2"
 set "filename=%filename:"=%"
 set "extensions=%extensions:"=%"
 setlocal enabledelayedexpansion
-:: validate file type
-if not exist "%filename%" (
-	call :error file not found.
+:: verify file existence & validate its type
+if exist "%filename%" (
+	::this loops thru each extension
+	for %%k in ("%filename%") do (
+		for %%j in (%extensions%) do (
+			call :truncate_str %%j %%~nxk
+			if /i not "%%j"=="!truncate_str!" (
+				call :error not a supported file.
+				endlocal & set "check=fail" 
+				) else (
+					endlocal & set "check=pass"
+				) 	)	)
+) else if not exist "%filename%" (
+	call :error "%filename%" not found
+	endlocal & set "check=fail"
 )
-::this loop each extension
-for %%k in ("%filename%") do (
-	for %%j in (%extensions%) do (
-		call :truncate_str %%j %%~nxk
-		if /i not "%%j"=="!truncate_str!" (
-			call :error not a supported file.
-			)	)	)
-endlocal
-exit /b %errorlevel%
+exit /b 0
 
 
 :: loops if drag and drop is not happening
