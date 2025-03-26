@@ -1,12 +1,12 @@
-::file processing template
 ::---------------------------------------------------------------------------------------------------
 @echo off
 
 :: user variables
 setlocal
-set "extensions=.txt"
+set "extensions=.exe"
 :: callback script
 set "OTHER_SCRIPT="
+
 
 
 :: functional variables
@@ -17,10 +17,7 @@ set "allow_block=%~2"
 set "in_out_all=%~3"
 set "empty_var="
 
-
 :: validate callback script exists and is executable function goes here
-
-
 
 :: Validate allow_block parameter
 call :validate "allow block" %allow_block%
@@ -50,6 +47,7 @@ set "loop=1"
 set "allow_block="
 set "in_out_all="
 
+
 :getFile
 call :info enter the file or folder to be processed here or
 call :info Press Enter to process all files with the extensions "%extensions%" in the current directory
@@ -58,6 +56,7 @@ set /p "_path=::"
 if not defined _path (
 	set "_path=%currentDirectory%"
 )	
+
 
 :file_or_folder0
 set "workingDirectory="
@@ -73,6 +72,7 @@ if "%file_or_folder%"=="folder" (
 	call :error "...%_path:~-10%" not found
 	goto :getFile
 ) else goto :getfile
+
 
 :directory_processing
 cls
@@ -95,8 +95,6 @@ if %found_files% equ 0 (
     goto :getFile
 )
 
-
-
 if not defined in_out_all call :in_out_all
 if not defined allow_block call :allow_block
 cls
@@ -104,7 +102,6 @@ call :info the following files will be %allow_block%ed:
 for %%j in (%extensions%) do (
 	dir /b *%%j
 )
-
 
 setlocal enabledelayedexpansion
 :: confirm install all files in the current directory
@@ -165,12 +162,8 @@ exit /b %errorlevel%
 
 :main
 set "program_full_path=%*"
-REM call :info Processing %program_full_path%...
 for %%i in ("%program_full_path:"=%") do set "rule_name=%%~ni"
-::test
-echo.
-echo \\\\\\\ dir=%in_out_all%  action=%allow_block%  name="%rule_name%" ///////
-REM netsh advfirewall firewall add rule name="%rule_name%" dir=%in_out_all% program="%program_full_path:"=%" profile=any action=%allow_block% enable=yes
+netsh advfirewall firewall add rule name="%rule_name%" dir=%in_out_all% program="%program_full_path:"=%" profile=any action=%allow_block% enable=yes
 exit /b %errorlevel%
 ::---------------------------------------------------------------------------------------------------
 
