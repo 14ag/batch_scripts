@@ -91,7 +91,7 @@ echo 127.0.0.1 wap.bignox.com
 echo 127.0.0.1 www.bignox.com
 echo 127.0.0.1 www.yeshen.com
 echo 127.0.0.1 www.yeshen.com.w.kunlungr.com
-) >> C:\Windows\System32\drivers\etc\hosts.txt
+REM ) >> C:\Windows\System32\drivers\etc\hosts.txt
 attrib +A +R C:\Windows\System32\drivers\etc\hosts.txt
 ren C:\Windows\System32\drivers\etc\hosts.txt hosts
 pause
