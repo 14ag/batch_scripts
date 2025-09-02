@@ -25,6 +25,14 @@
 ::---------------------------------------------------------------------------------------------------
 @echo off
 
+
+::clear this part to use the template vvvvv====
+echo this is only a template
+pause
+exit
+::====================================^^^^^====
+
+
 :: user variables
 setlocal
 set "extensions=.txt"
@@ -181,38 +189,38 @@ exit /b %errorlevel%
 
 :::::::::::::::::::::::::::::::::::::::::::helper functions (don't touch)::::::::::::::::::::::::::::::::::::::::::::::
 
+:reset_choice
 :: reset errorlevel for correct choice
 :: use immediately before choice command
 :: call :reset_choice
-:reset_choice
 exit /b 0
 
 
+:error
 :: error handling
 :: has a beep
 :: call :error "error message"
-:error
 Echo 1n| CHOICE /N >nul 2>&1 & :: BEL
 echo error: %*
 pause
 exit /b 1
 
 
+:info
 :: info handling
 :: does not have a beep
 :: call :info "info message"
-:info
 echo.
 echo info: %*
 exit /b 0
 
 
+:truncate_str
 :: shortens filename to control_extensionl.length() characters 
 :: returns shortened filename in variable [truncate_str]
 :: filename is the name of the file with extension
 :: extension is the extension to be truncated
 :: call :truncate_str file.name extension
-:truncate_str
 set "truncate_str="
 setlocal enabledelayedexpansion
 set "control_extension=%1"
@@ -226,11 +234,11 @@ for /L %%a in (1,1,10) do (
 exit /b 0
 
 
+:file_or_folder
 :: checks if [%1] is a file or folder
 :: returns "file" or "folder" in variable [file_or_folder]
 :: file_or_folder is the path to the file or folder
 ::call :file_or_folder file_or_folder
-:file_or_folder
 set "file_or_folder="
 setlocal enabledelayedexpansion
 set "b=%1"
@@ -248,12 +256,12 @@ if exist "%b%" (
 exit /b 0
 
 
+:validate
 :: items_to_test is a single string
 :: control is a string of items separated by spaces
 :: checks if any item_to_test is in control
 :: returns true or false in variable [validate]
 :: call :validate "control" %items_to_test%
-:validate
 set "validate="
 set "control=%1"
 set "item_to_test=%2"
@@ -271,10 +279,11 @@ if "%count%" geq "%items%" (
 exit /b 0
 
 
+:selector
+:: uses reset_choice
 :: creates a dynamic list of choices from a command that outputs a list
 :: & is just a command separator, while && is a conditional operator
 :: call :selector "[command that outputs list eg echo a & echo b & echo c]"
-:selector
 echo.
 set "selector="
 setlocal enabledelayedexpansion
@@ -307,9 +316,10 @@ for /L %%c in (%choicelist:~-1%,-1,%choicelist:~0,1%) do (
 exit /b 0
 
 
+:check
+:: uses truncate_str, error
 :: tests to find out if filename [%1] has any of these extensions [%2]
 :: call :check "filename" "extensions"
-:check
 set "check="
 set "filename=%1"
 set "extensions=%2"
@@ -335,9 +345,9 @@ if exist "%filename%" (
 exit /b 0
 
 
+:end
 :: this is it guys...
 :: loops if drag and drop is not happening
-:end
 if "%loop%"=="1" (
     pause
     cls
