@@ -1,2 +1,0 @@
-wmic computersystem where name="%computername%" call joindomainorworkgroup name="Workgroup_Name"
-wmic computersystem where name="%computername%" call rename name="settings"

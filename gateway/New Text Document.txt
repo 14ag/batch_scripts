@@ -1,0 +1,9 @@
+i have a ftp server on my phone that i want to access from this pc. the phone and pc are either connected p2p from the phones hotspot (network adresss vvarries), p2p from the pc's hotspot (192.168.137.xx) or through the router (192.168.100.xx).
+in these are scripts that i made to try automating login process but only the ftp_on_gateway is automatic. i dont like having to input the ip so my phone is set to use device mac adress (64-dd-e9-5c-e3-f3) for consistency.
+i want this whole thing automated. i will download these freethird party light tools to help locate my phone on the network and automatically get its ip if reccomended. i want the script to:
+1. search the gateway (my phones hotspot)
+2. check if pc's hotspot is on so as to search 192.168.137.xx (pcs gateway)
+3. check look for my phone on the network. here, im willing to choose my device if im prompted with a list of devices found. either using a vba window thing or a choice thing. refer to "adb_device_selector.bat" on how i implemented with adb
+goal is to find my phone so start with the one thats least intensive of the 3
+last resort- since phone and pc are on the same network make a vba window thing where i can input the last octet of the ip address. the whole point is to avoid typing the whole ip adress of my phone. otherwise its a fail. this might be redundant but if it reaches to the point where i have to input ip, a prompt can be used to ask if the phone is connected to the pc's hotspot or not so that the script will choose the right network bits while i input only the host bits (3 digits max)
+if setbacks are encountered, write me a txt file report that i can prompt a deep research AI with so as to get a way foward

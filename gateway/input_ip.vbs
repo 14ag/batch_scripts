@@ -1,0 +1,1 @@
+WScript.Echo InputBox(WScript.Arguments(0), WScript.Arguments(1), WScript.Arguments(2))

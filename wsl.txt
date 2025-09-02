@@ -1,7 +1,0 @@
-ssu-19041.1704-x64_70e350118b85fdae082ab7fde8165a947341ba1a
-windows10.0-kb5020030-x64_ec78cc08e60e0b81f0bb520bd328720979d75065
-
-restart
-
-MicrosoftCorporationII.WindowsSubsystemForLinux_1.1.5.0_neutral__8wekyb3d8bbwe.msixbundle
-Ubuntu2204-221101.zip.appxbundle

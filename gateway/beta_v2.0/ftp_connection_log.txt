@@ -1,0 +1,5 @@
+27/08/2025 12:33:25.97 - Connected to 192.168.100.1 via Phone Hotspot 
+27/08/2025 12:34:04.07 - Connected to 192.168.100.1 via Phone Hotspot 
+27/08/2025 12:51:03.10 - Connected to 192.168.247.228 via Phone Hotspot 
+28/08/2025 18:09:10.38 - Connected to 192.168.100.1 via Phone Hotspot 
+28/08/2025 18:10:23.52 - Connected to 192.168.100.1 (quick) 

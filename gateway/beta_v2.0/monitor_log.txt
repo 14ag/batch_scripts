@@ -1,0 +1,132 @@
+[ONLINE] Phone Detected
+
+IP Address:  192.168.100.23
+Network Type: Network Scan
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:40:18.61 - Phone detected at  192.168.100.23 (Network Scan
+[ONLINE] Phone Detected
+
+IP Address: 192.168.100.23
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:40:39.16 - Phone detected at 192.168.100.23 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.100.23
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:41:02.23 - Phone detected at 192.168.100.23 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.100.23
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:41:18.20 - Phone detected at 192.168.100.23 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.100.23
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:41:35.22 - Phone detected at 192.168.100.23 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.100.23
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:41:56.23 - Phone detected at 192.168.100.23 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.100.23
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:42:16.16 - Phone detected at 192.168.100.23 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:43:02.20 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:43:19.21 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:43:39.16 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:43:59.18 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:44:19.21 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:44:39.22 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:44:59.15 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:45:19.19 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:45:39.21 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:45:59.24 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:46:19.16 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:46:40.23 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:46:57.18 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:47:12.18 - Phone detected at 192.168.137.243 (ARP Cache
+[ONLINE] Phone Detected
+
+IP Address: 192.168.137.243
+Network Type: ARP Cache
+MAC Address: 64-dd-e9-5c-e3-f3
+27/08/2025 12:47:32.19 - Phone detected at 192.168.137.243 (ARP Cache

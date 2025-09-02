@@ -1,1 +1,0 @@
-adb shell appops set com.adgard.vpn ACTIVATE_VPN allow
