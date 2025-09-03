@@ -57,6 +57,7 @@ For Each objConfig In colNetworkConfigs
     
     For Each objAdapter In colAdapters
         adapterName = objAdapter.Name
+        LogVerbose ""
         LogVerbose "Found adapter: " & adapterName & " (Index: " & objConfig.Index & ")"
         
         ' Check adapter status
@@ -88,6 +89,7 @@ For Each objConfig In colNetworkConfigs
                     ' Check for Ethernet
                     ElseIf InStr(LCase(adapterName), "ethernet") > 0 Or _
                            InStr(LCase(adapterName), "realtek") > 0 Or _
+                           InStr(LCase(adapterName), "ndis") > 0 Or _
                            InStr(LCase(adapterName), "intel") > 0 And _
                            Not (InStr(LCase(adapterName), "wireless") > 0 Or _
                                 InStr(LCase(adapterName), "wi-fi") > 0 Or _
@@ -171,13 +173,12 @@ LogVerbose ""
 LogVerbose "Final output: " & gateways
 
 ' Output the result (only if not in verbose mode, or as final output)
-If Not isVerbose Then
-    WScript.Echo gateways
-Else
+If isVerbose Then
     LogVerbose ""
     LogVerbose "===== FINAL RESULT ====="
-    WScript.Echo gateways
 End If
+
+WScript.Echo gateways
 
 ' Helper function for IIf
 Function IIf(condition, trueValue, falseValue)
