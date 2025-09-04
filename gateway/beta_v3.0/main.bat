@@ -71,13 +71,19 @@ if defined get_gateways (
 		set count+=1
 	)
 	if %count% gtr 1 (
-		call :selector echo %get_gateways%
-	)
-	for %%a in (%get_gateways%) do (
-		for /f "tokens=1-2 delims=_" %%b in ("%%a") do (
-            echo %%b %%c
+		set "x="
+		for %%a in (%get_gateways%) do (
+			for /f "tokens=1-2 delims=_" %%b in ("%%a") do (
+            	set x=%%b %%c,%x%
+			)
+		)
+	call :selector %x%
+	for /f "tokens=1-2 delims= " %%a in ("%selector%") do (
+		set NETWORK_TYPE=%%a
+		set get_gateways=%%b
 		)
 	)
+	call :network_bits %get_gateways% 
 )
 cls
 for /L %%a in (1,1,6) do ( echo.)
