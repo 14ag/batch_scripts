@@ -280,28 +280,27 @@ exit /b 0
 
 
 :selector
-:: uses reset_choice
 :: creates a dynamic list of choices from a command that outputs a list
 :: & is just a command separator, while && is a conditional operator
-:: call :selector "[command that outputs list eg echo a & echo b & echo c]"
-echo.
-set "selector="
+:: call :selector arg1,arg2,arg3,...
 setlocal enabledelayedexpansion
-set command=%* >nul
+set "selector="
+set "arg_string=%*"
 set "i=0"
 set "choicelist="
-:: Loop through a list, act on each line
-for /f "eol=L tokens=1" %%a in ('!command!') do (
-	if errorlevel 1 (
-		echo Error: Failed to execute command: !command!
-		endlocal & exit /b 1
-	)
+:: Replace every comma with a quote, a space, and another quote (" ") and Wrap the entire resulting string in quotes
+set "arg_list="%arg_string:,=" "%""
+echo Processing arguments:
+rem Loop through the new quoted, space-separated list
+for %%a in (%arg_list%) do (
 	set /a i+=1
 	:: Create dynamic variable names (_1, _2, etc.)
 	for %%b in (_!i!) do (
 		set "%%b=%%a"
 		set "choicelist=!choicelist!!i!"
-		echo !i!. %%a
+        set "display_value=%%a"
+        set "display_value=!display_value:"=!"
+		echo   [!i!].. !display_value!
 	)   )
 
 call :reset_choice
@@ -313,6 +312,7 @@ for /L %%c in (%choicelist:~-1%,-1,%choicelist:~0,1%) do (
             goto :break
     )   )   )
 :break
+set "selector=%selector:"=%"
 exit /b 0
 
 
