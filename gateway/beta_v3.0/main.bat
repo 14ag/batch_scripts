@@ -42,7 +42,7 @@ call connect
 
 
 :connect
-call checkftp.bat %PHONE_IP% %FTP_PORT%
+call checkftp %PHONE_IP% %FTP_PORT%
 if %errorlevel%==0 (
     explorer ftp://%FTP_USER%:%FTP_PASS%@%PHONE_IP%:%FTP_PORT% >nul
 ) else (

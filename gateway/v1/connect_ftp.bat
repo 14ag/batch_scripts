@@ -5,8 +5,8 @@ set "PHONE_MAC=64-dd-e9-5c-e3-f3"
 set "FTP_USER=14ag"
 set "FTP_PASS=qwertyui"
 set "FTP_PORT=2121"
-set "LOG_FILE=C:\Users\philip\sauce\gateway\log.txt"
-set "VBS_INPUT=C:\Users\philip\sauce\gateway\input_ip.vbs"
+set "LOG_FILE=log.txt"
+set "VBS_INPUT=input_ip.vbs"
 
 echo %DATE% %TIME% - Starting FTP connection script > %LOG_FILE%
 
