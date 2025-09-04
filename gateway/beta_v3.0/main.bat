@@ -13,51 +13,45 @@ set PHONE_MAC=64-dd-e9-5c-e3-f3
 set PHONE_IP=
 set NETWORK_TYPE=
 
+call :get_gateways
+
 
 :method_1
 :: detect phone ip from arp table using mac address
 call :detect_macAdress %PHONE_MAC%
 if defined detect_macAdress (
 	set PHONE_IP=%detect_macAdress%
-	(
-	call :checkftp %PHONE_IP% %FTP_PORT%
-	) && ( 
-		goto :connect 
-	) || ( 
-		echo ftp server unreachable
-		pause
-	)
+	goto :connect  
 )
 
 
 :method_2
 :: search ip in the local subnet by pinging all possible ips
-call :get_gateways
-if defined get_gateways (
-
-	for %%a in (%get_gateways%) do (
-
-        for /f "tokens=1-2 delims=_" %%b in ("%%a") do (
-            echo %%b %%c
-			call :network_bits %%c
-
-			if defined network_bits (
-				call :ipSearch %network_bits%
-
-				if defined ipSearch (
-					set PHONE_IP=%ipSearch%
-					(
-					call :checkftp %PHONE_IP% %FTP_PORT%
-					) && ( 
-						goto :connect 
-					) || ( 
-						echo ftp server unreachable 
-					)
-				)
-            )
-        )
-    )
+if not defined get_gateways (
+	call :get_gateways
 )
+for %%a in (%get_gateways%) do (
+
+	for /f "tokens=1-2 delims=_" %%b in ("%%a") do (
+		echo %%b %%c
+		call :network_bits %%c
+
+		if defined network_bits (
+
+			for /L %%a in (1,1,254) do (
+				echo. >nul
+				(
+				ping -n 1 -w 10 %network_bits%.%%a | find "TTL="
+				) && (
+				:: if ping successful
+				set "PHONE_IP=%network_bits%.%%a"
+				call :connect
+				)
+			)
+		)
+	)
+)
+
 
 
 
@@ -65,59 +59,63 @@ if defined get_gateways (
 :method_3
 :: method 3 - manual input of phone ip address
 set "count=0"
-call :get_gateways
-if defined get_gateways (
-	for %%a in (%get_gateways%) do (
-		set count+=1
-	)
-	if %count% gtr 1 (
-		set "x="
-		for %%a in (%get_gateways%) do (
-			for /f "tokens=1-2 delims=_" %%b in ("%%a") do (
-            	set x=%%b %%c,%x%
-			)
-		)
-	call :selector %x%
-	for /f "tokens=1-2 delims= " %%a in ("%selector%") do (
-		set NETWORK_TYPE=%%a
-		set get_gateways=%%b
-		)
-	)
-	call :network_bits %get_gateways% 
+if not defined get_gateways (
+	call :get_gateways
 )
+
+for %%a in (%get_gateways%) do (
+	set count+=1
+)
+
+if %count% gtr 1 (
+	set "x="
+	for %%a in (%get_gateways%) do (
+		for /f "tokens=1-2 delims=_" %%b in ("%%a") do (
+			set x=%%b %%c,%x%
+		)
+	)
+
+call :selector %x%
+for /f "tokens=1-2 delims= " %%a in ("%selector%") do (
+	set NETWORK_TYPE=%%a
+	set get_gateways=%%b
+	)
+)
+
+call :network_bits %get_gateways% 
+
+
 cls
 for /L %%a in (1,1,6) do ( echo.)
-set /p "host_bits=enter the last digits %network_bits%." >nul
-set manual_input=%network_bits%.%host_bits%
-exit /b
-
+set /p "host_bits=enter the last digits %network_bits%."
+set PHONE_IP=%network_bits%.%host_bits%
+call :connect
+if errorlevel 1 (
+	echo failed to connect to %PHONE_IP%
+	echo please check the ip address and try again
+	pause
+	goto :method_3
+	exit /b 1
+)
 
 
 :connect
-explorer ftp://%FTP_USER%:%FTP_PASS%@%PHONE_IP%:%FTP_PORT% >nul
-goto :eof
-exit /b
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+(
+call :checkftp %PHONE_IP% %FTP_PORT%
+) && ( 
+	explorer ftp://%FTP_USER%:%FTP_PASS%@%PHONE_IP%:%FTP_PORT% >nul
+	exit
+) || ( 
+	echo ftp server not found
+)
+exit /b 1
 
 
 
 
 
 :checkftp
-:: Usage: checkftp.bat <IP_address> <PORT>
+:: Usage: checkftp <IP_address> <PORT>
 set IP=%1
 set PORT=%2
 (
@@ -166,6 +164,7 @@ exit /b 0
 
 
 :get_gateways
+set "get_gateways="
 for /f "delims=" %%G in ('cscript //NoLogo "GetGateways.vbs"') do set "get_gateways=%%G"
 exit /b
 	
@@ -178,7 +177,9 @@ exit /b 0
 
 
 :network_bits
-set ip=%1
+:: Usage: network_bits <IP_address>
+set "network_bits="
+set "ip=%1"
 :: parse into four tokens using "." as delimiter
 for /f "tokens=1-4 delims=." %%a in ("%ip%") do (
 	set network_bits=%%a.%%b.%%c
@@ -188,6 +189,7 @@ exit /b
 
 :detect_macAdress
 :: Usage: detect_macAdress <MAC_address>
+set "macAddress="
 set "macAddress=%1"
 (
 arp -a | find /i "%macAddress%" >nul
@@ -200,27 +202,7 @@ arp -a | find /i "%macAddress%" >nul
 	:: phone not found in arp table
 	set "detect_macAdress="
 	)
-call reset_choice
+call :reset_choice
 exit /b
 
 
-:ipSearch
-:: Usage: ipSearch gatewayIP
-set "gatewayIP=%1"
-for /L %%a in (1,1,254) do (
-	echo. >nul
-	(
-	ping -n 1 -w 10 192.168.1.%%a | find "TTL="
-	) && (
-	:: if ping successful
-	set "ipSearch=192.168.1.%%a"
-	(
-		call :checkftp %ipSearch% %PORT%
-		) && (
-		:: ftp server reachable
-		exit /b 0
-		)
-	)
-)
-set "ipSearch="
-exit /b 1
