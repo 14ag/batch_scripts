@@ -1,0 +1,1 @@
+write debug logs on main,bat from line 52

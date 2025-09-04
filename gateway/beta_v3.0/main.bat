@@ -1,9 +1,6 @@
 @echo off
 mode con: cols=60 lines=20
-REM echo console size test
-REM pause
-REM exit
-
+title FTP 
 
 :: FTP Configuration
 set FTP_USER=14ag
@@ -12,25 +9,47 @@ set FTP_PORT=2121
 set PHONE_MAC=64-dd-e9-5c-e3-f3
 set PHONE_IP=
 set NETWORK_TYPE=
+set debug=1
+
+call :debug script started
+call :debug initial parameters: FTP_USER=%FTP_USER% FTP_PASS=%FTP_PASS% FTP_PORT=%FTP_PORT% PHONE_MAC=%PHONE_MAC%
+call :debug fetching gateways
 
 call :get_gateways
+
+call :debug detected gateways: %get_gateways%
+call :debug starting connection methods
 
 
 :method_1
 :: detect phone ip from arp table using mac address
+
+call :debug attempting to detect phone IP from MAC address %PHONE_MAC%
+call :debug searching ARP table for MAC address %PHONE_MAC%
+
+
 call :detect_macAdress %PHONE_MAC%
+
+
+call :debug result of MAC address detection: %detect_macAdress%
 if defined detect_macAdress (
 	set PHONE_IP=%detect_macAdress%
-	goto :connect  
+
+	call :debug result of PHONE_IP: %PHONE_IP%
+	call :debug attempting to connect to PHONE_IP %PHONE_IP%
+
+	call :connect 
 )
 
+call :debug method 1 complete, moving to method 2 if needed
 
 :method_2
 :: search ip in the local subnet by pinging all possible ips
+call :debug starting method 2 - subnet scan
 if not defined get_gateways (
 	call :get_gateways
 )
-rem outer loop variable renamed to %%g to avoid collision with inner loop
+call :debug gateways to scan: %get_gateways%
 for %%g in (%get_gateways%) do (
 
 	for /f "tokens=1-2 delims=_" %%b in ("%%g") do (
@@ -208,4 +227,10 @@ arp -a | find /i "%macAddress%" >nul
 call :reset_choice
 exit /b
 
-
+:debug
+if not defined debug exit /b
+set "log=%*"
+(
+echo [DEBUG] : %log%
+) >> debug.log
+exit /b
