@@ -1,137 +1,212 @@
-### active_probe.bat
+# Overview of Batch Scripts Repository
 
-*Description:* Modifies the registry to use a global DNS for network connectivity status and forces a group policy update.
+This repository contains a collection of scripts that are passively maintained. Below is a structured overview of each file and directory, detailing their functions and purposes.
 
-### adb_device_selector.bat
+## Table of Contents
 
-*Description:* Lists connected ADB devices and allows the user to select one. The selected device's ID is then stored in a variable for use in other scripts.
+- [Overview of Batch Scripts Repository](#overview-of-batch-scripts-repository)
+  - [Table of Contents](#table-of-contents)
+  - [Directories](#directories)
+    - [binaries](#binaries)
+    - [by_claude](#by_claude)
+    - [powershell](#powershell)
+  - [Batch Scripts](#batch-scripts)
 
-### adb_dns.bat
+## Scripts
 
-*Description:* Configures private DNS on an Android device using ADB commands. It can disable private DNS or set a specific DNS provider.
+### lab\proj.txt
 
-### cdm.bat
+*Description:* A project description for a VBScript that gets gateway information for WiFi, mobile hotspot, and Ethernet connections.
 
-*Description:* Copies assets from the Windows Content Delivery Manager to a new folder on the desktop and renames them to `.jpg` files.
+### lab\lab.bat
 
-### clocksync.bat
+*Description:* A batch script that calls the VBScript `GetGateways_Strict_Debug.vbs` and processes its output to get gateway information.
 
-*Description:* Synchronizes the computer's date and time with a connected Android device using ADB.
+### lab\GetGateways_Strict_Debug.vbs
 
-### copy_from_source.bat
+*Description:* A VBScript that returns the gateway IP addresses for different network adapters, including WiFi, Ethernet, and mobile hotspots.
 
-*Description:* A script with two modes. The main mode uses `robocopy` to copy files from a source to a destination. An alternative mode is designed for copying contents from a disc drive.
+### lab\ip.vbs
 
-### delete_temp_files.bat
+*Description:* A VBScript that displays IPv4 addresses and default gateways for all network adapters.
 
-*Description:* Deletes the user's temporary files located in `%userprofile%\AppData\Local\Temp\`.
+### binaries\dots.bat
 
-### file_processing_template.bat
+*Description:* A batch script that displays a series of animations using `echo` and `ping` commands.
 
-*Description:* A template script for processing files and directories. It validates input, checks for file compatibility, and triggers subroutines for further processing.
+### binaries\file_or_folder.bat
 
-### fire_wall.bat
+*Description:* A batch script that checks if a given path is a file or a folder.
 
-*Description:* A versatile script for managing Windows Firewall rules. It can add rules to allow or block applications for inbound, outbound, or all traffic, supporting both single file and directory processing.
+### binaries\get_admin.bat
 
-### gdrive_download.bat
+*Description:* A batch script that requests administrative privileges if the script is not already running with them.
 
-*Description:* Uses `robocopy` to copy files from a source (intended to be a Google Drive folder) to a destination.
+### binaries\getandroid.cmd
 
-### get_pc_resolution.bat
+*Description:* A command script that lists connected Android devices and allows the user to select one.
 
-*Description:* Gets the computer's screen resolution and uses it to launch `scrcpy` with specific window dimensions and position.
+### binaries\header.bat
 
-### git_setup.bat
+*Description:* A binary file, content cannot be displayed.
 
-*Description:* Automates the initial setup and configuration of Git on a new system, including user details and default branch name. It also provides an option to generate an SSH key.
+### binaries\s.bat
 
-### hosted_network.bat
+*Description:* A batch script that finds and displays the wireless gateway address.
 
-*Description:* Manages a wireless hosted network on Windows. It allows setting up, starting, stopping, and refreshing the hosted network, as well as showing its information.
+### binaries\s1.bat
 
-### if_or_block.bat
+*Description:* A simple batch script that sets a variable `y` to the value `selector` using `set0` and then echoes the value of `y`.
 
-*Description:* A simple script that demonstrates how to check if a variable's value is one of several possible values, similar to an "OR" condition in other programming languages.
+### binaries\script_location_validator.bat
 
-### install_apks_and_magisk_modules.bat
+*Description:* A batch script that validates if a callback script exists and is executable.
 
-*Description:* Automates the installation of APK files and Magisk modules on Android devices. It supports batch processing and cleanup after installation.
+### binaries\selector.bat
 
-### install_appX.bat
+*Description:* A batch script that takes a command as input, displays the output of the command as a numbered list, and allows the user to select an option from the list.
 
-*Description:* Installs `.appx`, `.msix`, and `.appxbundle` packages using PowerShell. Supports drag-and-drop functionality and batch installation.
+### binaries\set0.cmd
 
-### junctions.bat
+*Description:* A command script that assigns the output of a command to a variable.
 
-*Description:* Manages NTFS junction points to create symbolic links between different folder locations for easier navigation and file management.
+### binaries\stringlength_counter.bat
 
-### measures.bat
+*Description:* A batch script that truncates a string. It seems to be a helper function for another script.
 
-*Description:* Waits for 4 minutes, then checks for a specific file on the desktop. If the file exists, it is deleted; otherwise, the user is logged off.
+### binaries\t.bat
 
-### measures.vbs
+*Description:* A simple batch script that echoes a string of "q"s.
 
-*Description:* A VBScript that executes `measures.bat` in a hidden window.
+### binaries\test.bat
 
-### measures.wsh
+*Description:* A test script that uses `set0.cmd` to assign the output of the `t.bat` script to the variable `x` and then echoes the value of `x`.
 
-*Description:* A Windows Script Host file that specifies the path to `measures.vbs` and sets options for its execution.
+### by_claude\1.bat
 
-### message.bat
+*Description:* A batch script that backs up the PowerShell color palette to a .reg file on the desktop.
 
-*Description:* Sends the message "hesoyam" to the current user.
+### by_claude\dynamic_batch_menu.bat
 
-### multitap.bat
+*Description:* A batch script that provides a dynamic menu for file operations, system information, and network tools.
 
-*Description:* A script for multitapping on a phone using ADB. It waits for a specific time, kills long-running cmd processes, and then starts tapping at a specific screen coordinate.
+### by_claude\Power.bat
 
-### netReset2.bat
+*Description:* A batch script that allows viewing, modifying, and resetting PowerShell's color settings.
 
-*Description:* Resets the computer's network configuration by releasing and renewing the IP address, flushing the DNS cache, and resetting various network-related settings. It also enables the use of global DNS and forces a group policy update, then prompts for a restart.
+### by_claude\reg2bat.bat
 
-### noxhost.bat
+*Description:* A batch script that converts a .reg file into a .bat file that applies the registry changes.
 
-*Description:* Modifies the Windows hosts file to block telemetry, ads, and other unwanted connections from the Nox Android Emulator.
+### by_claude\themebackup.bat
 
-### ps1_with_powershell.bat
+*Description:* A batch script that backs up the current Windows theme settings to a .reg file.
 
-*Description:* Associates `.ps1` files with PowerShell, allowing them to be executed by double-clicking.
+### gateway\adb_device_selector.bat
 
-### restart_explorer.bat
+*Description:* A batch script that lists connected Android devices and allows the user to select one.
 
-*Description:* Restarts the Windows Explorer process.
+### gateway\beta_v2.0\AI Research Report Template.pdf
 
-### send.bat
+*Description:* A technical research report about establishing an FTP connection to a phone.
 
-*Description:* A simple script to push a file to an Android device's primary storage (`/storage/emulated/0/`) using `adb push`.
+### gateway\beta_v2.0\binaries\auto_ftp_connector.bat
 
-### setp.bat
+*Description:* A batch script that automatically detects and connects to a phone's FTP server across multiple network configurations.
 
-*Description:* Adds the current directory to the system's PATH environment variable if it is not already present.
+### gateway\beta_v2.0\binaries\checkftp.bat
 
-### Steamports.bat
+*Description:* A batch script that checks if a given port is open on a given IP address using PowerShell.
 
-*Description:* Configures the Windows Firewall to allow traffic for Steam Remote Play and VR Streaming by adding rules for the necessary ports.
+### gateway\beta_v2.0\binaries\gateway.vbs
 
-### TiWorkerPatch.bat
+*Description:* A VBScript that detects the gateway of the active network connection, with a focus on identifying mobile hotspots.
 
-*Description:* A script that repeatedly terminates the `TiWorker.exe` process (part of Windows Update) to prevent high CPU usage.
+### gateway\beta_v2.0\binaries\main.bat
 
-### TiWorkerPatch.vbs
+*Description:* A batch script that repeatedly checks if an FTP server is accessible at a specific IP address and port.
 
-*Description:* A VBScript that executes `TiWorkerPatch.bat` in a hidden window.
+### gateway\beta_v2.0\FTP Automation Setup Guide.pdf
 
-### unbloat.bat
+*Description:* A setup guide for the Automated FTP Phone Connection solution.
 
-*Description:* Helps in uninstalling or disabling packages on an Android device using ADB. It lists all packages and then prompts the user for a package name to uninstall/disable.
+### gateway\beta_v2.0\ftp_config_manager.bat
 
-## Directories
+*Description:* A batch script that provides a comprehensive menu-driven interface for managing FTP connection settings, including viewing, editing, and testing configurations, as well as managing network profiles.
 
-### binaries
+### gateway\beta_v2.0\ftp_connection_log.txt
 
-*Description:* Contains helper scripts and executables utilized by other scripts in this repository.
+*Description:* A log file that contains records of successful FTP connections.
 
-### binaries/device_selector.bat
+### gateway\beta_v2.0\ftp_launcher_main.bat
 
-*Description:* A helper script for selecting a device from a list of devices.
+*Description:* A comprehensive batch script that acts as a central launcher for a suite of tools designed to connect to a phone's FTP server. It provides a menu-driven interface with various connection methods, configuration options, and troubleshooting tools.
+
+### gateway\beta_v2.0\monitor_log.txt
+
+*Description:* A log file that records phone detection events, including the IP address, network type, MAC address, and timestamp.
+
+### gateway\beta_v2.0\network_helper.vbs
+
+*Description:* A VBScript that provides a set of functions to aid in network discovery and device selection for the FTP phone connector. It includes functions to get the default gateway, find a phone by its MAC address, detect the phone on the network, and show UI dialogs for device selection and manual IP input.
+
+### gateway\beta_v2.0\network_monitor.bat
+
+*Description:* A batch script that runs in the background and continuously monitors the network for a specific phone's MAC address. When the phone is detected, it provides a notification and options to connect to the FTP server.
+
+### gateway\beta_v2.0\network_scanner.ps1
+
+*Description:* A PowerShell script that provides advanced network scanning capabilities to detect a phone's FTP server. It can perform parallel scanning, identify devices with open FTP ports, and prioritize scanning based on network type.
+
+### gateway\beta_v2.0\phone_cache.txt
+
+*Description:* A cache file that stores the last known IP address of the phone and the timestamp of the last successful connection.
+
+### gateway\beta_v2.0\phone_profiles.ini
+
+*Description:* An INI file that stores network profiles for the FTP phone connector. Each profile seems to contain the SSID, IP address, and network range.
+
+### gateway\beta_v2.0\quick_ftp_launcher.bat
+
+*Description:* A batch script that provides a fast way to connect to the phone's FTP server by using a cache of the last known IP address and a history of recent connections. If these quick methods fail, it falls back to a smart scan and then to the main `auto_ftp_connector.bat` script.
+
+### gateway\beta_v2.0\test_ftp_setup.bat
+
+*Description:* A comprehensive test suite for the FTP Phone Connection solution. It checks for required scripts, network adapter and gateway configurations, PowerShell availability, and the phone's presence in the ARP cache. It also provides options for testing the FTP connection, performing a quick network scan, and generating a detailed test report.
+
+### gateway\connect_ftp.bat
+
+*Description:* A batch script that attempts to automatically find a phone's IP address by its MAC address in the ARP cache, and if not found, it pings all devices on the connected subnets to populate the ARP cache and then checks again. If the phone is still not found, it prompts the user for the IP address manually using a VBScript. Once the IP is determined, it opens an FTP connection to the phone.
+
+### gateway\ftp_on_gateway.bat
+
+*Description:* A batch script that attempts to connect to an FTP server on a phone. It first tries to get the gateway IP address and then checks if the FTP server is reachable. It includes functions for getting the gateway, checking the FTP connection, and providing a selector menu. It also has a manual input option if the automatic detection fails.
+
+### gateway\ftp_on_manual_ip.bat
+
+*Description:* A simple batch script that opens an FTP connection to a hardcoded IP address and credentials.
+
+### gateway\gateway_beta_v1.1.bat
+
+*Description:* A batch script that gets the gateway IP address from a VBScript, tests the connection to a specific port on that IP using PowerShell, and then opens an FTP connection if the test is successful. If the test fails, it prompts the user for the last two octets of the IP address and then attempts to connect.
+
+### gateway\gateway.vbs
+
+*Description:* A VBScript that retrieves and displays the default gateway IP address of the active network connection.
+
+### gateway\input_ip.vbs
+
+*Description:* A VBScript that displays an input box with a prompt, title, and default value provided as command-line arguments, and returns the user's input.
+
+### gateway\log.txt
+
+*Description:* A log file that records the steps taken by the `connect_ftp.bat` script, including ARP cache scans, pings, and manual input prompts.
+
+### gateway\New Text Document.txt
+
+*Description:* A text file that describes the project's goal of automating the process of connecting to an FTP server on a phone, with various network configurations. It outlines the desired steps for the script to take, including searching for the phone on different networks, providing a device selection menu, and offering a manual input option as a last resort.
+
+### powershell\cheskstart.ps1
+
+*Description:* A PowerShell script that checks if the Start Menu is the foreground window.
+

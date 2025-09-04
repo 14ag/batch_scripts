@@ -19,7 +19,6 @@ if wifi and mobile hotspot and ethernet GetGateways_Strict_Debug.vbs is supposed
  
  
  windows mobile hotspot is usually under the name "Microsoft Wi-Fi Direct Virtual Adapter". hosted network was deprecated many yrs ago
- log verbosely 
- make me the GetGateways_Strict_Debug.vbs
+usb tethering is under hotspot 
  
  

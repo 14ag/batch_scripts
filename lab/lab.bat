@@ -1,5 +1,5 @@
 @echo off
-REM set x=q.w.e.rtyui
+set x=q.w.e.rtyui
 
 ::learn trancating
 REM set y=%x:~-1,1%
