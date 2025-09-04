@@ -30,21 +30,23 @@ if defined detect_macAdress (
 if not defined get_gateways (
 	call :get_gateways
 )
-for %%a in (%get_gateways%) do (
+rem outer loop variable renamed to %%g to avoid collision with inner loop
+for %%g in (%get_gateways%) do (
 
-	for /f "tokens=1-2 delims=_" %%b in ("%%a") do (
+	for /f "tokens=1-2 delims=_" %%b in ("%%g") do (
 		echo %%b %%c
 		call :network_bits %%c
 
 		if defined network_bits (
 
-			for /L %%a in (1,1,254) do (
+			rem inner numeric loop variable renamed to %%h to avoid reuse of outer variables
+			for /L %%h in (1,1,254) do (
 				echo. >nul
 				(
-				ping -n 1 -w 10 %network_bits%.%%a | find "TTL="
+				ping -n 1 -w 10 %network_bits%.%%h | find "TTL="
 				) && (
 				:: if ping successful
-				set "PHONE_IP=%network_bits%.%%a"
+				set "PHONE_IP=%network_bits%.%%h"
 				call :connect
 				)
 			)
@@ -63,8 +65,9 @@ if not defined get_gateways (
 	call :get_gateways
 )
 
+rem Count gateways properly using arithmetic expansion
 for %%a in (%get_gateways%) do (
-	set count+=1
+	set /a count+=1
 )
 
 if %count% gtr 1 (
