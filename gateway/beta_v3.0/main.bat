@@ -22,12 +22,18 @@ goto :method_1
 :method_1
 :: detect phone ip from arp table using mac address
 if not defined PHONE_MAC echo setup PHONE_MAC for fast connection & goto method_2
+set "macAddress_lookup="
 if not defined macAddress_lookup (
 	call :debug searching ARP table for MAC address %PHONE_MAC%
 	call :macAddress_lookup %PHONE_MAC%
 )
 call :debug result of MAC address detection: %macAddress_lookup%
-
+if defined macAddress_lookup (
+	set PHONE_IP=%macAddress_lookup%
+) else (
+	call :debug MAC address not found, skipping connection attempt
+	goto :method_2
+)
 set PHONE_IP=%macAddress_lookup%
 
 call :debug attempting to connect with ip %PHONE_IP%
@@ -189,7 +195,7 @@ call :debug constructed PHONE_IP: %PHONE_IP%
 (
 call :connect && goto :break
 ) || (
-	call :debug ping failed for !network_bits!.%%d
+	call :debug ping failed for %PHONE_IP%
 	echo no ftp servers could be found.
 	echo switching to manual ip input mode.
 	goto :method_4
@@ -216,7 +222,7 @@ call :formatting 3
 echo im so sorry this is what i tried to avoid 
 set /p "PHONE_IP=enter the full ip address of the phone:"
 call :network_bits %PHONE_IP%
-set a=%network_bits:~0,-1%
+set a=%network_bits%
 if defined get_gateways call :network_bits %get_gateways%
 if not "%a%"=="%network_bits%" (
 	echo your phone and pc are not on the same network
@@ -232,8 +238,7 @@ ping -n 1 -w 10 %PHONE_IP% | find "TTL=" >nul
 	echo ping failed for %PHONE_IP%
 	goto :menu
 	)
-echo end of test & pause
-goto :connect0
+
 
 
 
@@ -403,5 +408,5 @@ exit /b 0
 exit /b 1
 
 
-:EOF
+:eof
 exit
