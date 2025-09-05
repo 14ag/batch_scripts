@@ -10,13 +10,14 @@ set FTP_PORT=2121
 set PHONE_MAC=64-dd-e9-5c-e3-f3
 set PHONE_IP=
 set NETWORK_TYPE=
+set LOGPATH=%userprofile%\desktop\
 set "debug=1"
 
 
 call :debug script started
 call :debug initial parameters: FTP_USER=%FTP_USER% FTP_PASS=%FTP_PASS% FTP_PORT=%FTP_PORT% PHONE_MAC=%PHONE_MAC%
 
-goto :method_3
+goto :method_1
 
 
 :method_1
@@ -374,7 +375,7 @@ exit /b
 
 :debug
 if not defined debug exit /b
-if not defined new set "new=1" & echo. > debug.log
+if not defined new set "new=1" & echo. > %LOGPATH%debug.log
 set "log=%*"
 setlocal enabledelayedexpansion
 (
