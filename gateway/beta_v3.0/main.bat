@@ -1,6 +1,6 @@
-::@echo off
+@echo off
 set "lines=20"
-::mode con: cols=60 lines=%lines%
+mode con: cols=60 lines=%lines%
 title FTP 
 
 :: FTP Configuration
@@ -20,6 +20,8 @@ goto :method_1
 
 
 :method_1
+call :formatting 8
+
 :: detect phone ip from arp table using mac address
 if not defined PHONE_MAC echo setup PHONE_MAC for fast connection & goto method_2
 set "macAddress_lookup="
@@ -28,44 +30,40 @@ if not defined macAddress_lookup (
 	call :macAddress_lookup %PHONE_MAC%
 )
 call :debug result of MAC address detection: %macAddress_lookup%
-if defined macAddress_lookup (
-	set PHONE_IP=%macAddress_lookup%
-) else (
-	call :debug MAC address not found, skipping connection attempt
+
+if not defined macAddress_lookup (
+	echo arp lookup failed, attempting slow search
 	goto :method_2
 )
+
+call :debug result of MAC address detection: %macAddress_lookup%
+
 set PHONE_IP=%macAddress_lookup%
 
 call :debug attempting to connect with ip %PHONE_IP%
 (
-call :connect
-) && (
-	call :debug connection successful with method 1
-	exit
+call :connect && goto :eof
 ) || (
-	echo connection failed , attempting slow search
+	echo quick connect failed , retrying...
+	if defined method_1 goto :method_2
+	netsh interface ip delete arpcache
+	set "method_1=1"
+	goto :method_1
 	call :debug connection failed with method 1, moving to method 2
 )
 
 call :debug end of method 1
+
+
 goto :method_2
 
 
 
-
-
-
-
-
-
-
-
-
-
 :method_2
+set "PHONE_IP="
 :: search ip in the local subnet by pinging all possible ips
-
-call :debug starting method 2 -ip scan
+set method_2=1
+call :debug starting ip scan method
 
 call :debug fetching gateways
 
@@ -80,7 +78,6 @@ for %%a in (%get_gateways%) do (
 
 call :debug gateways to scan: %get_gateways%
 
-call :formatting %count%
 echo please wait...
 
 setlocal enabledelayedexpansion
@@ -105,7 +102,7 @@ for %%a in (%get_gateways%) do (
 			:: if ping successful
 			call :debug ping successful for !network_bits!.%%d
 			set "PHONE_IP=!network_bits!.%%d"
-			call :connect && goto :break
+			call :connect && goto :eof
 			) || (
 				:: if ping failed
 				call :debug ping failed for !network_bits!.%%d
@@ -114,8 +111,9 @@ for %%a in (%get_gateways%) do (
 					if %%d equ 254 (
 						call :formatting 3
 						echo no ftp servers could be found.
+						set "method_2="
 						call :selector try again,manual input,exit
-						if /i "%selector%"=="exit" exit /b
+						if /i "%selector%"=="exit" goto :eof
 						if /i "%selector%"=="manual input" goto :method_3
 						if /i "%selector%"=="try again" goto :method_1
 						goto :menu
@@ -125,28 +123,23 @@ for %%a in (%get_gateways%) do (
 		)
 	)
 )
-:break
+
 call :debug end of method 2
-goto :eof
-
-
-
-
-
-
-
-
-
 
 
 
 
 
 :method_3
+set "PHONE_IP="
 :: method 3 - manual input of phone host bits
 setlocal enabledelayedexpansion
-call :debug starting method 3 manual input
+call :debug starting method 3 quick manual input
+
+call :formatting 6
+
 echo switching to manual input mode.
+echo.
 
 call :get_gateways
 
@@ -172,6 +165,8 @@ if defined x set "x=%x:~0,-1%"
 
 call :debug starting :selector %x%
 
+
+echo  select the network your phone is connected to:
 call :selector %x%
 
 for /f "tokens=1-2 delims=_" %%a in ("%selector%") do (
@@ -183,7 +178,6 @@ call :debug user selected NETWORK_TYPE=%NETWORK_TYPE% and gateway=%get_gateways%
 
 call :network_bits %get_gateways% 
 
-call :formatting 1
 
 set /p "host_bits=enter the last digits %network_bits%."
 
@@ -191,26 +185,16 @@ call :debug user entered host_bits: %host_bits%
 
 set PHONE_IP=%network_bits%.%host_bits%
 
-call :debug constructed PHONE_IP: %PHONE_IP%
+call :debug PHONE_IP: %PHONE_IP%
 (
-call :connect && goto :break
+call :connect && goto :eof
 ) || (
-	call :debug ping failed for %PHONE_IP%
-	echo no ftp servers could be found.
-	echo switching to manual ip input mode.
+	call :debug connect failed for %PHONE_IP%
+	echo no ftp servers could be found, switching to manual ip input mode.
+	call :debug end of method 3
 	goto :method_4
 	)
 			
-:break
-call :debug end of method 3
-goto :eof
-
-
-
-
-
-
-
 
 
 
@@ -218,8 +202,8 @@ goto :eof
 :method_4
 :: method 4 - direct input of full phone ip address, im so sorry this is what i tried to avoid pls forgive me
 call :debug starting method 4 direct input
-call :formatting 3
 echo im so sorry this is what i tried to avoid 
+echo.
 set /p "PHONE_IP=enter the full ip address of the phone:"
 call :network_bits %PHONE_IP%
 set a=%network_bits%
@@ -228,19 +212,25 @@ if not "%a%"=="%network_bits%" (
 	echo your phone and pc are not on the same network
 	goto :menu
 	)
-call :debug
+call :debug ping %PHONE_IP%
 (
 ping -n 1 -w 10 %PHONE_IP% | find "TTL=" >nul
 ) && (
-	echo ping successful 
-	call :connect
+	echo. >nul
+	(
+	call :connect && goto :eof
+	) || (
+		echo ftp server not found on %PHONE_IP%
+	)
 ) || (
 	echo ping failed for %PHONE_IP%
-	goto :menu
 	)
 
-
-
+call :selector try again,quick input,exit
+if /i "%selector%"=="exit" goto :eof
+if /i "%selector%"=="quick input" goto :method_3
+if /i "%selector%"=="try again" goto :method_4
+goto :menu
 
 
 
@@ -252,10 +242,12 @@ call :checkftp %PHONE_IP% %FTP_PORT%
 ) && ( 
 	::ftp server found
 	rem explorer ftp://%FTP_USER%:%FTP_PASS%@%PHONE_IP%:%FTP_PORT% >nul
-	echo connection successful on %PHONE_IP% & exit /b 0
-		) || ( 
+	call :debug connection successful on %PHONE_IP%
+	exit /b 0
+	) || ( 
 		::ftp server not found
-		echo ftp server not found on %PHONE_IP% & exit /b 1 
+		call :debug connection failed on %PHONE_IP%
+		exit /b 1		 
 		)
 
 
@@ -263,7 +255,7 @@ call :checkftp %PHONE_IP% %FTP_PORT%
 :menu
 call :formatting 7
 echo please select
-call :selector method 1  fast autosearch,method 2  slow autosearch,method 3  enter phone host bits,method 4  enter phone ip address,exit
+call :selector method 1  fast search,method 2  slow search,method 3  quick input,method 4  manual input,exit
 if /i "%selector%"=="exit" goto :eof
 for /f "tokens=2 delims= " %%a in ("%selector%") do (
 	echo.
