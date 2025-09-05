@@ -78,7 +78,7 @@ for %%a in (%get_gateways%) do (
 
 call :debug gateways to scan: %get_gateways%
 
-echo please wait...
+echo  wait...
 
 setlocal enabledelayedexpansion
 set /a i=0
@@ -260,7 +260,7 @@ call :checkftp %PHONE_IP% %FTP_PORT%
 
 :menu
 call :formatting 7
-echo please select
+echo  menu
 call :selector method 1  fast search,method 2  slow search,method 3  quick input,method 4  manual input,exit
 if /i "%selector%"=="exit" goto :eof
 for /f "tokens=2 delims= " %%a in ("%selector%") do (
