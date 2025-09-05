@@ -247,7 +247,7 @@ goto :menu
 call :checkftp %PHONE_IP% %FTP_PORT% 
 ) && ( 
 	::ftp server found
-	rem explorer ftp://%FTP_USER%:%FTP_PASS%@%PHONE_IP%:%FTP_PORT% >nul
+	explorer ftp://%FTP_USER%:%FTP_PASS%@%PHONE_IP%:%FTP_PORT% >nul
 	call :debug connection successful on %PHONE_IP%
 	exit /b 0
 	) || ( 
