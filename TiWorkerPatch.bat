@@ -6,6 +6,7 @@ set interaction=0
 set executableName=TiWorker.exe
 if "interaction"=="1" echo hey. ill take it from here
 :patch
+:: (search) && ((found) && (killed) || (unkilled)) || (unfound)
 (
 tasklist | find /I /N "%executableName%%" >nul 2>&1
 ) && (

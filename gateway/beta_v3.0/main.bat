@@ -9,53 +9,52 @@ set FTP_PORT=2121
 set PHONE_MAC=64-dd-e9-5c-e3-f3
 set PHONE_IP=
 set NETWORK_TYPE=
-set debug=1
-
+set "debug=1"
+goto :connect0
 call :debug script started
 call :debug initial parameters: FTP_USER=%FTP_USER% FTP_PASS=%FTP_PASS% FTP_PORT=%FTP_PORT% PHONE_MAC=%PHONE_MAC%
-call :debug fetching gateways
 
-call :get_gateways
-
-call :debug detected gateways: %get_gateways%
-call :debug starting connection methods
-
+if not defined PHONE_MAC echo setup PHONE_MAC for fast connection & goto method_2
 
 :method_1
 :: detect phone ip from arp table using mac address
-
-call :debug attempting to detect phone IP from MAC address %PHONE_MAC%
-call :debug searching ARP table for MAC address %PHONE_MAC%
-
-
-call :detect_macAdress %PHONE_MAC%
-
-
-call :debug result of MAC address detection: %detect_macAdress%
-if defined detect_macAdress (
-	set PHONE_IP=%detect_macAdress%
-
-	call :debug result of PHONE_IP: %PHONE_IP%
-	call :debug attempting to connect to PHONE_IP %PHONE_IP%
-
-	call :connect 
+if not defined macAddress_lookup (
+	call :debug searching ARP table for MAC address %PHONE_MAC%
+	call :macAddress_lookup %PHONE_MAC%
 )
+call :debug result of MAC address detection: %macAddress_lookup%
 
-call :debug method 1 complete, moving to method 2 if needed
+set PHONE_IP=%macAddress_lookup%
+
+call :debug attempting to connect with ip %PHONE_IP%
+
+call :connect 
+
+call :debug method 1 complete
+pause >nul
+
+
 
 :method_2
 :: search ip in the local subnet by pinging all possible ips
 
-call :debug starting method 2 - subnet scan
+call :debug starting method 2 -ip scan
 
 if not defined get_gateways (
+
+	call :debug fetching gateways
+
 	call :get_gateways
+
+	call :debug detected gateways: %get_gateways%
+
 )
 call :debug gateways to scan: %get_gateways%
 
-for %%g in (%get_gateways%) do (
+setlocal enabledelayedexpansion
+for %%a in (%get_gateways%) do (
 
-	for /f "tokens=1-2 delims=_" %%b in ("%%g") do (
+	for /f "tokens=1-2 delims=_" %%b in ("%%a") do (
 		echo %%b %%c
 
 		call :debug scanning network type %%b with gateway %%c
@@ -66,17 +65,19 @@ for %%g in (%get_gateways%) do (
 
 		if defined network_bits (
 
-			rem inner numeric loop variable renamed to %%h to avoid reuse of outer variables
-			for /L %%h in (1,1,254) do (
+			for /L %%d in (1,1,254) do (
 				echo. >nul
 				(
-				ping -n 1 -w 10 %network_bits%.%%h | find "TTL=" >nul
+				ping -n 1 -w 10 %network_bits%.%%d | find "TTL=" >nul
 				) && (
 				:: if ping successful
-				call :debug ping successful for %network_bits%.%%h
-				set "PHONE_IP=%network_bits%.%%h"
+				call :debug ping successful for %network_bits%.%%d
+				set "PHONE_IP=%network_bits%.%%d"
 				call :connect
-				)
+				) || (
+				:: if ping failed
+				call :debug ping failed for %network_bits%.%%d
+
 			)
 		)
 	)
@@ -136,35 +137,42 @@ if errorlevel 1 (
 	exit /b 1
 )
 
+:: connection debug
+:connect0
+set PHONE_IP=192.168.100.23
+set FTP_PORT=2121
+(
+ping -n 1 -w 10 %PHONE_IP% | find "TTL=" >nul
+) && (
+	echo ping successful 
+	call :connect
+)
+echo end of test & pause
+goto :connect0
+
 
 :connect
-call :debug entering :connect with PHONE_IP=%PHONE_IP%
-(
-call :checkftp %PHONE_IP% %FTP_PORT%
-) && ( 
-	call :debug checkftp successful for %PHONE_IP%:%FTP_PORT%. Opening explorer.
-	explorer ftp://%FTP_USER%:%FTP_PASS%@%PHONE_IP%:%FTP_PORT% >nul
-	exit
-) || ( 
-	call :debug checkftp failed for %PHONE_IP%:%FTP_PORT%.
-	echo ftp server not found
-)
-exit /b 1
-
-
-
+:: (search) && ((found) && (killed) || (unkilled)) || (unfound)
+( 
+	call :checkftp %PHONE_IP% %FTP_PORT% 
+	) && ( 
+		::ftp server found
+		@REM explorer ftp://%FTP_USER%:%FTP_PASS%@%PHONE_IP%:%FTP_PORT% >nul
+		echo connection successful on %PHONE_IP% & exit /b 0
+		 ) || ( 
+			::ftp server not found
+			echo not found on %PHONE_IP% & exit /b 1 
+			)
 
 
 :checkftp
 :: Usage: checkftp <IP_address> <PORT>
 set IP=%1
 set PORT=%2
-call :debug entering :checkftp with IP=%IP% PORT=%PORT%
 (
 :: Run PowerShell silently without showing the progress bar
 powershell -Command "$ProgressPreference='SilentlyContinue'; if (Test-NetConnection -ComputerName %IP% -Port %PORT% -InformationLevel Quiet -ErrorAction SilentlyContinue) { exit 0 } else { exit 1 }"
 ) >nul
-call :debug :checkftp result for %IP%:%PORT% is %errorlevel%
 exit /b %errorlevel%
 
 
@@ -173,16 +181,12 @@ exit /b %errorlevel%
 :: & is just a command separator, while && is a conditional operator
 :: call :selector arg1,arg2,arg3,...
 setlocal enabledelayedexpansion
-call :debug entering :selector with args: %*
 set "selector="
 set "arg_string=%*"
 set "i=0"
 set "choicelist="
 :: Replace every comma with a quote, a space, and another quote (" ") and Wrap the entire resulting string in quotes
 set "arg_list="%arg_string:,=" "%""
-
-
-echo Processing arguments:
 rem Loop through the new quoted, space-separated list
 for %%a in (%arg_list%) do (
 	set /a i+=1
@@ -197,15 +201,14 @@ for %%a in (%arg_list%) do (
 
 call :reset_choice
 choice /c %choicelist% /n /m "pick option btn %choicelist:~0,1% and %choicelist:~-1,1% ::"
-for /L %%c in (%choicelist:~-1%,-1,%choicelist:~0,1%) do (
-    if errorlevel %%c (
-    for %%d in (!_%%c!) do (
-            endlocal & set "selector=%%d"
+for /L %%a in (%choicelist:~-1%,-1,%choicelist:~0,1%) do (
+    if errorlevel %%a (
+    for %%b in (!_%%a!) do (
+            endlocal & set "selector=%%b"
             goto :break
     )   )   )
 :break
 set "selector=%selector:"=%"
-call :debug :selector result: %selector%
 exit /b 0
 
 
@@ -213,7 +216,7 @@ exit /b 0
 :get_gateways
 call :debug entering :get_gateways
 set "get_gateways="
-for /f "delims=" %%G in ('cscript //NoLogo "GetGateways.vbs"') do set "get_gateways=%%G" >nul
+for /f "delims=" %%a in ('cscript //NoLogo "GetGateways.vbs"') do set "get_gateways=%%a" >nul
 call :debug :get_gateways result: %get_gateways%
 exit /b
 	
@@ -238,9 +241,8 @@ call :debug :network_bits result: %network_bits%
 exit /b
 
 
-:detect_macAdress
-:: Usage: detect_macAdress <MAC_address>
-call :debug entering :detect_macAdress with MAC: %1
+:macAddress_lookup
+:: Usage: macAddress_lookup <MAC_address>
 set "macAddress="
 set "macAddress=%1"
 (
@@ -248,20 +250,34 @@ arp -a | find /i "%macAddress%" >nul
 ) && (
 	:: found
 	for /f "tokens=1" %%a in ('arp -a ^| find /i "%macAddress%"') do (
-		set "detect_macAdress=%%a"
+		set "macAddress_lookup=%%a"
 		)
 	) || (
 	:: phone not found in arp table
-	set "detect_macAdress="
+	set "macAddress_lookup="
 	)
-call :debug :detect_macAdress result: %detect_macAdress%
-call :reset_choice
 exit /b
 
 :debug
 if not defined debug exit /b
+if not defined new set "new=1" & echo. > debug.log
 set "log=%*"
+setlocal enabledelayedexpansion
 (
-echo [DEBUG] : %log%
-) >> debug.log
+for /f "tokens=1-2 delims= " %%a in ('time /t') do (
+	for /f "tokens=1-2 delims=:" %%b in ("%time%") do (
+		set "hour=%%b"
+		set "minute=%%c"
+		set "second=!time:~6,2!"
+	)
+	echo [!hour!:!minute!:!second!] : %log%
+)) >> debug.log
+endlocal
 exit /b
+
+
+:error
+exit /b 1
+
+
+:EOF
