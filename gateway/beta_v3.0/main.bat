@@ -111,8 +111,7 @@ for %%a in (%get_gateways%) do (
 					:: last network, so if we reach here with d=254 then no ftp servers found
 					if %%d equ 254 (
 						call :debug end of method 2, search failed
-						call :method_2a no ftp servers could be found.
-						
+						call :method_2a no ftp servers could be found.						
 					)
 				)
 			)
