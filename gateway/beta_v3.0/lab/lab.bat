@@ -2,8 +2,8 @@
 set x=q.w.e.rtyui
 
 ::learn trancating
-REM set y=%x:~-1,1%
-REM echo y= %y%
+ set y=%x:~0,-1%
+ echo y="%y%"
 
 :: learn parse into four tokens using "." as delimiter
 @REM for /f "tokens=1-4 delims=." %%a in ("%x%") do (
@@ -13,12 +13,12 @@ REM echo y= %y%
 
 
 
-cscript //NoLogo "GetGateways_debug.vbs" verbose
-echo.
-echo.
-echo.
-for /f "delims=" %%G in ('cscript //NoLogo "GetGateways_debug.vbs" verbose') do set "gateways=%%G"
-echo using vbs   %gateways%
+@REM cscript //NoLogo "GetGateways_debug.vbs" verbose
+@REM echo.
+@REM echo.
+@REM echo.
+@REM for /f "delims=" %%G in ('cscript //NoLogo "GetGateways_debug.vbs" verbose') do set "gateways=%%G"
+@REM echo using vbs   %gateways%
 
 
 

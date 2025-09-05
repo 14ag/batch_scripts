@@ -16,7 +16,7 @@ set "debug=1"
 call :debug script started
 call :debug initial parameters: FTP_USER=%FTP_USER% FTP_PASS=%FTP_PASS% FTP_PORT=%FTP_PORT% PHONE_MAC=%PHONE_MAC%
 
-goto :method_1
+goto :method_3
 
 
 :method_1
@@ -96,6 +96,7 @@ for %%a in (%get_gateways%) do (
 		
 		for /L %%d in (1,1,254) do (
 			echo. >nul
+			call :debug i= !i!,  count=!count! %count%
 			(
 			ping -n 1 -w 10 !network_bits!.%%d | find "TTL=" >nul
 			) && (
@@ -106,27 +107,27 @@ for %%a in (%get_gateways%) do (
 			) || (
 				:: if ping failed
 				call :debug ping failed for !network_bits!.%%d
-				if %i% equ %count% (
+				if "!i!"=="%count%" (
 					:: last network, so if we reach here with d=254 then no ftp servers found
 					if %%d equ 254 (
-						call :formatting 3
-						echo no ftp servers could be found.
-						set "method_2="
-						call :selector try again,manual input,exit
-						if /i "%selector%"=="exit" goto :eof
-						if /i "%selector%"=="manual input" goto :method_3
-						if /i "%selector%"=="try again" goto :method_1
-						goto :menu
+						call :debug end of method 2, search failed
+						call :method_2a no ftp servers could be found.
+						
 					)
 				)
 			)
 		)
 	)
 )
-
-call :debug end of method 2
-
-
+:method_2a
+set "method_2="
+call :formatting 5
+echo %*
+call :selector try again,manual input,exit
+if /i "%selector%"=="exit" goto :eof
+if /i "%selector%"=="manual input" goto :method_3
+if /i "%selector%"=="try again" goto :method_1
+goto :menu
 
 
 
@@ -143,9 +144,11 @@ echo.
 
 call :get_gateways
 
+call :debug gateways found "%get_gateways%"
+
 REM set "get_gateways=wifi_192.168.600.1 lan_192.168.900.1"
 
-set "count=0"
+set /a "count=0"
 for %%a in (%get_gateways%) do (
 	set /a count+=1
 )
@@ -158,26 +161,25 @@ if %count% gtr 1 (
 			set "x=%%b %%c,!x!"
 		)
 	)
-)
 
 :: removing trailing comma
 if defined x set "x=%x:~0,-1%"
-
-call :debug starting :selector %x%
-
+echo "%x%" "!x!"
+call :debug starting :selector !x!
 
 echo  select the network your phone is connected to:
 call :selector %x%
-
+)
+set selector=wifi_192.168.100.1
 for /f "tokens=1-2 delims=_" %%a in ("%selector%") do (
 	set NETWORK_TYPE=%%a
-	set get_gateways=%%b
+	set IP=%%b
 	)
 
+set "get_gateways=%IP%"
 call :debug user selected NETWORK_TYPE=%NETWORK_TYPE% and gateway=%get_gateways%
 
 call :network_bits %get_gateways% 
-
 
 set /p "host_bits=enter the last digits %network_bits%."
 
@@ -208,11 +210,12 @@ set /p "PHONE_IP=enter the full ip address of the phone:"
 call :network_bits %PHONE_IP%
 set a=%network_bits%
 if defined get_gateways call :network_bits %get_gateways%
-if not "%a%"=="%network_bits%" (
-	echo your phone and pc are not on the same network
-	goto :menu
+if not "%a%"=="%network_bits%" ( 
+	call :method_4a your phone and pc are not on the same network
 	)
+
 call :debug ping %PHONE_IP%
+
 (
 ping -n 1 -w 10 %PHONE_IP% | find "TTL=" >nul
 ) && (
@@ -220,12 +223,15 @@ ping -n 1 -w 10 %PHONE_IP% | find "TTL=" >nul
 	(
 	call :connect && goto :eof
 	) || (
-		echo ftp server not found on %PHONE_IP%
+		call :method_4a ftp server not found on %PHONE_IP%
 	)
 ) || (
-	echo ping failed for %PHONE_IP%
+	call :method_4a ping failed for %PHONE_IP%
 	)
 
+:method_4a
+call :formatting 5
+echo %*
 call :selector try again,quick input,exit
 if /i "%selector%"=="exit" goto :eof
 if /i "%selector%"=="quick input" goto :method_3
