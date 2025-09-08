@@ -1,1 +1,5 @@
 write debug logs on main,bat from line 52
+
+changelog
+fixed debug logs directory
+scans gateways first before each ip

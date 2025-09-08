@@ -14,10 +14,12 @@ set LOGPATH=%userprofile%\desktop\
 set "debug=1"
 
 
-call :debug script started
 call :debug initial parameters: FTP_USER=%FTP_USER% FTP_PASS=%FTP_PASS% FTP_PORT=%FTP_PORT% PHONE_MAC=%PHONE_MAC%
 
+
 goto :method_1
+
+
 
 
 :method_1
@@ -49,14 +51,11 @@ call :connect && goto :eof
 	if defined method_1 goto :method_2
 	netsh interface ip delete arpcache
 	set "method_1=1"
+	call :debug could not connect with method 1,
 	goto :method_1
-	call :debug connection failed with method 1, moving to method 2
 )
 
 call :debug end of method 1
-
-
-goto :method_2
 
 
 
@@ -79,7 +78,24 @@ for %%a in (%get_gateways%) do (
 
 call :debug gateways to scan: %get_gateways%
 
-echo  wait...
+echo  please wait...
+
+for %%a in (%get_gateways%) do (
+	for /f "tokens=1-2 delims=_" %%b in ("%%a") do (
+
+		call :debug scanning network type %%b with gateway %%c
+
+		echo scanning the %%b gateway for ftp servers
+
+		call :debug attempting connection with ip %%c
+
+		(
+		call :connect %%c && goto :eof
+		) || (
+			call :debug no ftp servers could be found on %%c
+		)
+	)
+)
 
 setlocal enabledelayedexpansion
 set /a i=0
@@ -96,25 +112,29 @@ for %%a in (%get_gateways%) do (
 		call :debug network bits: !network_bits!
 		
 		for /L %%d in (1,1,254) do (
-			echo. >nul
-			call :debug i= !i!,  count=!count! %count%
-			(
-			ping -n 1 -w 10 !network_bits!.%%d | find "TTL=" >nul
-			) && (
-			:: if ping successful
-			call :debug ping successful for !network_bits!.%%d
-			set "PHONE_IP=!network_bits!.%%d"
-			call :connect && goto :eof
-			) || (
-				:: if ping failed
-				call :debug ping failed for !network_bits!.%%d
-				if "!i!"=="%count%" (
-					:: last network, so if we reach here with d=254 then no ftp servers found
-					if %%d equ 254 (
-						call :debug end of method 2, search failed
-						call :method_2a no ftp servers could be found.						
+			if !network_bits!.%%d neq %%c (
+				
+				echo. >nul
+				(
+				ping -n 1 -w 10 !network_bits!.%%d | find "TTL=" >nul
+				) && (
+				:: if ping successful
+				call :debug ping successful for !network_bits!.%%d
+				set "PHONE_IP=!network_bits!.%%d"
+				call :connect && goto :eof
+				) || (
+					:: if ping failed
+					call :debug ping failed for !network_bits!.%%d
+					if "!i!"=="%count%" (
+						:: last network, so if we reach here with d=254 then no ftp servers found
+						if %%d equ 254 (
+							call :debug end of method 2, search failed
+							call :method_2a no ftp servers could be found.						
+						)
 					)
 				)
+			) else (
+				call :debug skipping %%c
 			)
 		)
 	)
@@ -242,6 +262,8 @@ goto :menu
 
 
 :connect
+set "connect=%*"
+if defined connect set "PHONE_IP=%*" 
 :: (search) && ((found) && (killed) || (unkilled)) || (unfound)
 ( 
 call :checkftp %PHONE_IP% %FTP_PORT% 
@@ -375,19 +397,16 @@ exit /b
 
 :debug
 if not defined debug exit /b
-if not defined new set "new=1" & echo. > %LOGPATH%debug.log
 set "log=%*"
+set "tstamp="
 setlocal enabledelayedexpansion
-(
 for /f "tokens=1-2 delims= " %%a in ('time /t') do (
-	for /f "tokens=1-2 delims=:" %%b in ("%time%") do (
-		set "hour=%%b"
-		set "minute=%%c"
-		set "second=!time:~6,2!"
+	for /f "tokens=1-3 delims=:" %%b in ("%%a") do (
+		endlocal & set "tstamp=[%%b:%%c]"
 	)
-	echo [!hour!:!minute!:!second!] : %log%
-)) >> debug.log
-endlocal
+) 
+if not defined newLogFile set "newLogFile=1" & echo %tstamp% : script started > %LOGPATH%debug.log
+echo %tstamp% : %log% >> %LOGPATH%debug.log
 exit /b
 
 
