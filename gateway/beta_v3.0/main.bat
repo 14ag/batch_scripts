@@ -266,7 +266,7 @@ set "connect=%*"
 if defined connect set "PHONE_IP=%*" 
 :: (search) && ((found) && (killed) || (unkilled)) || (unfound)
 ( 
-call :checkftp %PHONE_IP% %FTP_PORT% 
+call :check_ftp %PHONE_IP% %FTP_PORT% 
 ) && ( 
 	::ftp server found
 	explorer ftp://%FTP_USER%:%FTP_PASS%@%PHONE_IP%:%FTP_PORT% >nul
@@ -301,8 +301,8 @@ echo something went wrong
 pause & exit
 
 
-:checkftp
-:: Usage: checkftp <IP_address> <PORT>
+:check_ftp
+:: Usage: check_ftp <IP_address> <PORT>
 set IP=%1
 set PORT=%2
 (
