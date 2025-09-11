@@ -1,73 +1,59 @@
-::@echo off
-set "currentDirectory=%~dp0"
-set "foo=%currentDirectory%foo.txt"
-echo %foo%
-pause
+@echo off
+prompt $G
 
-
-goto :2
-:2
-set /a "settimeoutx=0"
-echo %settimeoutx%>%foo%
-set /a "settimeouty=3"
-
-call :settimeout 9 echo 9secs
-call :settimeout 8 echo 8secs 
-call :settimeout 1 echo 1secs
+call :set_timeout 9 echo 9secs
+call :set_timeout 8 echo 8secs
+call :set_timeout 1 echo 1secs
 call :check_assync
-echo all done
-pause
+echo all done!
 goto :eof
 
 
-:check_assync
-set /p "settimeoutx=<%foo%"
-echo %settimeoutx% __________________________
-if not "%settimeoutx%"=="%settimeouty%" pause & goto :check_assync
-exit /b 0
 
 
-:settimeout 
-:: usage call :settimeout [#] [single line command with escaped chars. reccommended to be a callback]
-:: trying to make asyncronous
-:: increases the value of 'settimeoutx' by 1 on each completion
+:set_timeout
+:: usage call :set_timeout [#] [single line command with escaped chars. reccommended to be a callback]
+:: then call :check_assync to wait for all to finish 
+
+if defined check_assync ( set /a "set_timeouty+=1" & goto :set_timeout_a ) 
+
+set "foo=%~dp0foo.txt"
+(echo %set_timeoutx%)>%foo%
+set /a "set_timeouty=1"
+set /a "set_timeoutx=0"
+(echo %set_timeoutx%)>%foo%
+
+:set_timeout_a
 set "args=%*"
-if not defined args goto :eosettimeout
+if not defined args goto :eo_set_timeout
 setlocal enabledelayedexpansion       
 set "t="
 set "command="
 set "first_arg_found=0"
-
 for /F "tokens=1,* delims= " %%a in ("%args%") do (
     endlocal & ( set "t=%%a" & set "command=%%b")
+) 
+start /b cmd /v:on /c "timeout /t %t% /nobreak >nul && (%command% & (for /f %%x in (%foo%) do set /a x=%%x+1) >nul & echo ^!x^!>%foo%)"
+set "check_assync=v"
+goto :eo_set_timeout
+
+:check_assync
+set /p "set_timeoutx="<%foo%
+
+if not "%set_timeoutx%"=="%set_timeouty%" (
+    timeout /t 1 /nobreak >nul 2>nul
+    goto :check_assync
+) else (
+    set "check_assync="
+    del "%foo%" >nul 2>nul
+    goto :eo_set_timeout
 )
-start /b cmd /v:on /c "timeout /t %t% /nobreak >nul && ( %command% & set /p "x=<%foo%" & set /a "x+=1" & echo %x%>%foo% )"
-echo. >nul
-:eosettimeout
+:eo_set_timeout
 exit /b
+
+
+
 
 
 :eof
 exit /b
-
-
-
-output:
-"0"=="3"
-Press any key to continue . . . 1secs
-Invalid attempt to call batch label outside of batch script.
-settimeoutx=0
-8secs
-Invalid attempt to call batch label outside of batch script.
-settimeoutx=0
-9secs
-Invalid attempt to call batch label outside of batch script.
-settimeoutx=0
-
-"0"=="3"
-Press any key to continue . . .
-"0"=="3"
-Press any key to continue . . .
-"0"=="3"
-Press any key to continue . . .
-....
