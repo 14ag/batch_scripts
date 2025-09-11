@@ -1,12 +1,25 @@
 @echo off
-prompt $G
+set "args=%*"
+if defined args goto %args%
+call :set_timeout 2 call %~n0 oooo
 
-call :set_timeout 9 echo 9secs
-call :set_timeout 8 echo 8secs
-call :set_timeout 1 echo 1secs
+@REM call :set_timeout 8 echo 8secs
+@REM call :set_timeout 1 echo 1secs
 call :check_assync
 echo all done!
 goto :eof
+
+
+
+:oooo
+call :eeee
+exit /b 0
+
+:eeee
+echo eeee
+exit /b 0
+
+
 
 
 
@@ -16,7 +29,6 @@ goto :eof
 :: then call :check_assync to wait for all to finish 
 
 if defined check_assync ( set /a "set_timeouty+=1" & goto :set_timeout_a ) 
-
 set "foo=%~dp0foo.txt"
 (echo %set_timeoutx%)>%foo%
 set /a "set_timeouty=1"
@@ -33,6 +45,7 @@ set "first_arg_found=0"
 for /F "tokens=1,* delims= " %%a in ("%args%") do (
     endlocal & ( set "t=%%a" & set "command=%%b")
 ) 
+
 start /b cmd /v:on /c "timeout /t %t% /nobreak >nul && (%command% & (for /f %%x in (%foo%) do set /a x=%%x+1) >nul & echo ^!x^!>%foo%)"
 set "check_assync=v"
 goto :eo_set_timeout
