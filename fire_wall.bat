@@ -2,7 +2,7 @@
 :: commandline usage:  fire_wall.bat "path\to\program.exe" ^[allow^|block^] ^[in^|out^|all^]
 ::
 ::---------------------------------------------------------------------------------------------------
-@echo off
+::@echo off
 
 :: user variables
 setlocal
@@ -57,19 +57,21 @@ call :info Press Enter to process all files with the extensions "%extensions%" i
 set "_path="
 set /p "_path=::"
 if not defined _path (
-	set "_path=%currentDirectory%"
-)	
+	set "_path=%currentDirectory:"=%"
+) else if defined _path (
+		set "_path=%_path:"=%"
+	)
 
 
 :file_or_folder0
 set "workingDirectory="
 set "file="
-call :file_or_folder %_path%
+call :file_or_folder "%_path%"
 if "%file_or_folder%"=="folder" (
-	set "workingDirectory=%_path%"
+	set "workingDirectory="%_path%""
 	goto :directory_processing
 ) else if "%file_or_folder%"=="file" (
-	set "file=%_path%"
+	set "file="%_path%""
 	goto :fileProcessing
 ) else if "%file_or_folder%"=="" (
 	call :error "...%_path:~-10%" not found
@@ -136,9 +138,9 @@ if %errorlevel% equ 2 (
 :fileProcessing
 if not defined in_out_all call :in_out_all
 if not defined allow_block call :allow_block
-call :check "%file%" "%extensions%"
+call :check %file% "%extensions%"
 if "%check%"=="fail" goto :getFile
-call :subRoutine "%file%"
+call :subRoutine %file%
 if errorlevel 0 (
 	call :info \\\\\\\ done ///////
 	) else if not errorlevel 0 (

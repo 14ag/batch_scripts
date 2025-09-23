@@ -39,9 +39,6 @@ set /a "set_timeoutx=0"
 set "args=%*"
 if not defined args goto :eo_set_timeout
 setlocal enabledelayedexpansion       
-set "t="
-set "command="
-set "first_arg_found=0"
 for /F "tokens=1,* delims= " %%a in ("%args%") do (
     endlocal & ( set "t=%%a" & set "command=%%b")
 ) 
