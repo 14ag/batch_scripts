@@ -2,7 +2,7 @@
 :: commandline usage:  fire_wall.bat "path\to\program.exe" ^[allow^|block^] ^[in^|out^|all^]
 ::
 ::---------------------------------------------------------------------------------------------------
-::@echo off
+@echo off
 
 :: user variables
 setlocal
