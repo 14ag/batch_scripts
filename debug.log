@@ -1,0 +1,19 @@
+[17:47] : script started 
+[17:47] : initial parameters: FTP_USER=14ag FTP_PASS=qwertyui FTP_PORT=2121 PHONE_MAC=64-dd-e9-5c-e3-f3 
+[17:47] : searching ARP table for MAC address 64-dd-e9-5c-e3-f3 
+[17:47] : result of MAC address detection: 
+[17:47] : starting ip scan method 
+[17:47] : fetching gateways 
+[17:47] : entering :get_gateways 
+[17:47] : :get_gateways result: wifi_192.168.100.1 
+[17:47] : detected gateways: wifi_192.168.100.1 
+[17:47] : gateways to scan: wifi_192.168.100.1 
+[17:48] : initial parameters: FTP_USER=14ag FTP_PASS=qwertyui FTP_PORT=2121 PHONE_MAC=64-dd-e9-5c-e3-f3 
+[17:48] : searching ARP table for MAC address 64-dd-e9-5c-e3-f3 
+[17:48] : result of MAC address detection: 
+[17:48] : starting ip scan method 
+[17:48] : fetching gateways 
+[17:48] : entering :get_gateways 
+[17:48] : :get_gateways result: wifi_192.168.100.1 
+[17:48] : detected gateways: wifi_192.168.100.1 
+[17:48] : gateways to scan: wifi_192.168.100.1 

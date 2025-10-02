@@ -1,0 +1,24 @@
+# ftp_gateway
+
+if wifi and mobile hotspot and ethernet GetGateways_Strict_Debug.vbs is supposed to return all connected gateways in format gatewayName_[IP]
+ eg: ethernet_1.1.1.1 wifi_2.2.2.2 mobileHotspot_3.3.3.3
+ the names before the ips are the friendly names that i choose to use and they are merely representations of the adapter names.  notice gateways are in a single string joined by " " 
+
+ i want to call this vb script from a batch script "lab.bat" and store this info in a variable 'gateways'
+ procedure of the vb script:
+1. check if wifi is on
+2 check if im connected to a network
+3 if yes find the gateway address of this network
+4 store it in variable 'wifi' using the format specified eg 'wifi_2.2.2.2'
+5 check if windows mobile hotspot is on
+6 if yes find the gateway address of this network
+7 store it in variable 'hotspot' using the format specified eg 'mobileHotspot_2.2.2.2'
+8 check if im connected to an ethernet network
+9 if yes find the gateway address of this network
+10 store it in variable 'ethernet' using the format specified eg 'mobileHotspot_2.2.2.2'
+11 for all the variables (im talking about "wifi" "ethernet" "hotspot" ) that are not empty jon them to ine string separated by space (" "). this string should be saved in the variable "gateways"
+12 return this variable to the batch file to be saved in the variable "gateways" shown on screen
+ 
+ 
+ windows mobile hotspot is usually under the name "Microsoft Wi-Fi Direct Virtual Adapter". hosted network was deprecated many yrs ago
+usb tethering is under hotspot 
