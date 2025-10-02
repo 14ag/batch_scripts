@@ -1,4 +1,6 @@
 @echo off
+::ftp configuration
+prompt $g$s
 rem -------------------------------
 rem Read an INI-style file from Desktop and set variables
 rem - Skips blank lines and lines starting with ; or #
@@ -15,17 +17,19 @@ set "INI=%USERPROFILE%\Desktop\ftp_settings.ini"
 if not exist "%INI%" (
     echo creating config file on your desktop...
     (
-  echo FTP_USER=
-  echo FTP_PASS=
-  echo FTP_PORT=
-  echo PHONE_MAC=
-  echo debug=
-  echo 
+      echo FTP_USER=
+      echo FTP_PASS=
+      echo FTP_PORT=
+      echo PHONE_MAC=
+      echo debug= 
     ) > %INI%
-    config file created. press any key to open it
+    echo config file created. Press any key to open it for editing.
     pause >nul
     start notepad.exe %INI%
-    goto :create
+    echo.
+    echo Please edit and save the config file, then press any key to continue.
+    pause >nul
+    rem Optionally, you could check again here if the file is still empty or invalid.
 )
 
 rem Read the file line by line
@@ -58,27 +62,24 @@ for /f "usebackq delims=" %%A in ("%INI%") do (
 
           rem trim leading spaces from value (preserve internal spaces)
           for /f "tokens=* delims=" %%Y in ("!value!") do set "value=%%Y"
-
-          rem remove surrounding double quotes if present
-          if "!value:~0,1!"=="\"" set "value=!value:~1!"
-          if "!value:~-1!"=="\"" set "value=!value:~0,-1!"
-
-          rem finally set the environment variable (key name must be valid)
-          rem Use delayed expansion to preserve special chars in value.
-          set "!key!=!value!"
+          
+          set !key!=!value!
           set "keys=!keys! !key!"
-          set "keys=!keys:~1!"
 
         )
       )
     )
   )
 )
+set "keys=!keys:~1!"
 
-for %%V in (!keys!) do (
-  set "x=!x! & set %%V=!%%V!"
-)
+
+for %%a in (!keys!) do (
+  set "x=!x! & set %%a=!%%a!"
+  )
+
 set "x=%x:~3%"
 endlocal & %x%
 
 echo FTP_USER=%FTP_USER%
+pause

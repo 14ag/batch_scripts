@@ -1,7 +1,9 @@
 write debug logs on main,bat from line 52
-multithread ip search
-add getConfig() function
+fix multithread ip search
+make the getconfig handle passwords with special characters
+
 
 changelog
 fixed debug logs directory
 scans gateways first before each ip
+add getConfig() function

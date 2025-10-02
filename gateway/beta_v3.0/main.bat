@@ -4,15 +4,65 @@ mode con: cols=60 lines=%lines%
 title FTP 
 
 :: FTP Configuration
-set FTP_USER=14ag
-set FTP_PASS=qwertyui
-set FTP_PORT=2121
-set PHONE_MAC=64-dd-e9-5c-e3-f3
 set PHONE_IP=
 set NETWORK_TYPE=
 set LOGPATH=%userprofile%\desktop\
-set "debug=1"
+set "INI=%USERPROFILE%\Desktop\ftp_settings.ini"
 
+
+setlocal EnableDelayedExpansion
+:: Path to INI on Desktop 
+:create
+if not exist "%INI%" (
+    echo creating config file on your desktop...
+    (
+      echo FTP_USER=
+      echo FTP_PASS=
+      echo FTP_PORT=
+      echo PHONE_MAC=
+      echo debug= 
+    ) > %INI%
+    echo config file created. Press any key to open it for editing.
+    pause >nul
+    start notepad.exe %INI%
+    echo.
+    echo Please edit and save the config file, then press any key to continue.
+    pause >nul
+)
+
+for /f "usebackq delims=" %%A in ("%INI%") do (
+  set "line=%%A"
+
+  for /f "tokens=* delims= " %%B in ("!line!") do set "line=%%B"
+
+  if defined line (
+    set "firstChar=!line:~0,1!"
+
+    if NOT "!firstChar!"==";" if NOT "!firstChar!"=="#" (
+
+      echo "!line!" | findstr /c:"=" >nul
+      if not errorlevel 1 (
+
+        for /f "tokens=1* delims==" %%K in ("!line!") do (
+          set "value=%%L"
+          for /f "tokens=* delims=" %%Y in ("!value!") do set "value=%%Y"
+          
+		  set "key=%%K"
+          for /f "tokens=* delims= " %%X in ("!key!") do set "key=%%X"
+          set "keys=!keys! !key!"
+          set !key!=!value!
+    
+        )
+      )
+    )
+  )
+)
+for %%a in (!keys:~1!) do (
+  set "x=!x! & set %%a=!%%a!"
+  )
+
+set "x=%x:~3%"
+endlocal & %x%
 
 call :debug initial parameters: FTP_USER=%FTP_USER% FTP_PASS=%FTP_PASS% FTP_PORT=%FTP_PORT% PHONE_MAC=%PHONE_MAC%
 
