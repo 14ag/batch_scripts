@@ -64,6 +64,8 @@ for %%a in (!keys:~1!) do (
 set "x=%x:~3%"
 endlocal & %x%
 
+
+
 call :debug initial parameters: FTP_USER=%FTP_USER% FTP_PASS=%FTP_PASS% FTP_PORT=%FTP_PORT% PHONE_MAC=%PHONE_MAC%
 
 
@@ -74,8 +76,8 @@ goto :method_1
 
 :method_1
 call :formatting 8
-
-:: detect phone ip from arp table using mac address
+echo detecting phone ip ...this won't take long
+:: detecting phone ip from arp table using mac address
 if not defined PHONE_MAC echo setup PHONE_MAC for fast connection & goto method_2
 set "macAddress_lookup="
 if not defined macAddress_lookup (
