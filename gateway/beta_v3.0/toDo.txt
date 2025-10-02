@@ -1,5 +1,6 @@
 write debug logs on main,bat from line 52
 multithread ip search
+add getConfig() function
 
 changelog
 fixed debug logs directory

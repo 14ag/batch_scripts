@@ -4,6 +4,7 @@ rem Read an INI-style file from Desktop and set variables
 rem - Skips blank lines and lines starting with ; or #
 rem - Accepts lines in the form KEY=VALUE
 rem - Trims leading spaces, removes surrounding quotes from values
+
 rem -------------------------------
 
 setlocal EnableDelayedExpansion
@@ -65,20 +66,19 @@ for /f "usebackq delims=" %%A in ("%INI%") do (
           rem finally set the environment variable (key name must be valid)
           rem Use delayed expansion to preserve special chars in value.
           set "!key!=!value!"
+          set "keys=!keys! !key!"
+          set "keys=!keys:~1!"
+
         )
       )
     )
   )
 )
 
-rem (optional) show what was loaded - comment out if not needed
-echo --- loaded variables from "%INI%" ---
-for %%V in (FTP_USER FTP_PASS FTP_PORT PHONE_MAC PHONE_IP NETWORK_TYPE LOGPATH debug) do (
-  if defined %%V echo %%V=%%V
+for %%V in (!keys!) do (
+  set "x=!x! & set %%V=!%%V!"
 )
-echo -------------------------------------
+set "x=%x:~3%"
+endlocal & %x%
 
 echo FTP_USER=%FTP_USER%
-pause
-rem keep variables for the rest of the script (no endlocal here)
-rem continue your script below...
