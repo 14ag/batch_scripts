@@ -1,5 +1,3 @@
-# ftp_gateway
-
 if wifi and mobile hotspot and ethernet GetGateways_Strict_Debug.vbs is supposed to return all connected gateways in format gatewayName_[IP]
  eg: ethernet_1.1.1.1 wifi_2.2.2.2 mobileHotspot_3.3.3.3
  the names before the ips are the friendly names that i choose to use and they are merely representations of the adapter names.  notice gateways are in a single string joined by " " 
@@ -22,3 +20,4 @@ if wifi and mobile hotspot and ethernet GetGateways_Strict_Debug.vbs is supposed
  
  windows mobile hotspot is usually under the name "Microsoft Wi-Fi Direct Virtual Adapter". hosted network was deprecated many yrs ago
 usb tethering is under hotspot 
+ 

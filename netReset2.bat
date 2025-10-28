@@ -65,5 +65,5 @@ reg add "HKEY_LOCAL_MACHINE\SOFTWARE\POLICIES\MICROSOFT\Windows\NetworkConnectiv
 gpupdate /force >nul
 echo press enter to restart your pc
 pause >nul
-:: shutdown /r /f /t 3 
+shutdown /r /f /t 3 
 exit

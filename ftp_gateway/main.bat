@@ -19,8 +19,12 @@ if not exist "%INI%" (
       echo FTP_USER=
       echo FTP_PASS=
       echo FTP_PORT=
+	  echo.
+      echo ; mac address format xx-xx-xx-xx-xx-xx
       echo PHONE_MAC=
-      echo debug= 
+	  echo.
+      echo ; set debug to 0 for off or 1 to get log file on your desktop folder
+      echo debug=0
     ) > %INI%
     echo config file created. Press any key to open it for editing.
     pause >nul
@@ -31,32 +35,28 @@ if not exist "%INI%" (
 )
 
 for /f "usebackq delims=" %%A in ("%INI%") do (
-  set "line=%%A"
+	set "line=%%A"
 
-  for /f "tokens=* delims= " %%B in ("!line!") do set "line=%%B"
+	for /f "tokens=* delims= " %%B in ("!line!") do set "line=%%B"
 
-  if defined line (
-    set "firstChar=!line:~0,1!"
+		if defined line (
+		set "firstChar=!line:~0,1!"
 
-    if NOT "!firstChar!"==";" if NOT "!firstChar!"=="#" (
+			if NOT "!firstChar!"==";" if NOT "!firstChar!"=="#" (
 
-      echo "!line!" | findstr /c:"=" >nul
-      if not errorlevel 1 (
+				echo "!line!" | findstr /c:"=" >nul
+				if not errorlevel 1 (
 
-        for /f "tokens=1* delims==" %%K in ("!line!") do (
-          set "value=%%L"
-          for /f "tokens=* delims=" %%Y in ("!value!") do set "value=%%Y"
-          
-		  set "key=%%K"
-          for /f "tokens=* delims= " %%X in ("!key!") do set "key=%%X"
-          set "keys=!keys! !key!"
-          set !key!=!value!
-    
-        )
-      )
-    )
-  )
-)
+				for /f "tokens=1* delims==" %%K in ("!line!") do (
+					set "value=%%L"
+					for /f "tokens=* delims=" %%Y in ("!value!") do set "value=%%Y"
+					
+					set "key=%%K"
+					for /f "tokens=* delims= " %%X in ("!key!") do set "key=%%X"
+					set "keys=!keys! !key!"
+					set !key!=!value!
+)	)	)	)	)
+
 for %%a in (!keys:~1!) do (
   set "x=!x! & set %%a=!%%a!"
   )
@@ -145,9 +145,7 @@ for %%a in (%get_gateways%) do (
 		call :connect %%c && goto :eof
 		) || (
 			call :debug no ftp servers could be found on %%c
-		)
-	)
-)
+)	)	)
 
 setlocal enabledelayedexpansion
 set /a i=0
@@ -182,15 +180,11 @@ for %%a in (%get_gateways%) do (
 						if %%d equ 254 (
 							call :debug end of method 2, search failed
 							call :method_2a no ftp servers could be found.						
-						)
-					)
-				)
+				)	)	)
 			) else (
 				call :debug skipping %%c
-			)
-		)
-	)
-)
+)	)	)	)
+
 :method_2a
 set "method_2="
 call :formatting 5
@@ -394,7 +388,7 @@ for /L %%a in (%choicelist:~-1%,-1,%choicelist:~0,1%) do (
     for %%b in (!_%%a!) do (
             endlocal & set "selector=%%b"
             goto :break
-    )   )   )
+)   )   )
 :break
 set "selector=%selector:"=%"
 exit /b 0
