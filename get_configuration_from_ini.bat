@@ -9,7 +9,7 @@ rem - Trims leading spaces, removes surrounding quotes from values
 
 rem -------------------------------
 
-setlocal EnableDelayedExpansion
+setlocal EnableDelayedExpansion 
 
 rem Path to INI on Desktop (change filename if needed)
 set "INI=%USERPROFILE%\Desktop\ftp_settings.ini"
