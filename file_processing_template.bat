@@ -244,7 +244,7 @@ exit /b 0
 ::call :file_or_folder file_or_folder
 set "file_or_folder="
 setlocal enabledelayedexpansion
-set "b=%1"
+set "b=%*"
 set "b=%b:"=%"
 if exist "%b%" (
 	for %%I in ("%b%") do (
@@ -255,6 +255,22 @@ if exist "%b%" (
 		) else (
 			endlocal & set "file_or_folder=file"
 		)   )
+)
+exit /b 0
+
+
+:get_folder_name
+:: call :get_folder_name [path]
+:: returns the name of the folder whose path was provided in the variable !get_folder_name!
+set "myString=%*"
+:loop
+:: Check if the string contains a backslash
+echo "%myString%" | find "\" >nul && (
+	:: Strip everything up to the first backslash and repeat
+	set "myString=%myString:*\=%"
+	goto :loop
+) || (
+    set "get_folder_name=%myString%"
 )
 exit /b 0
 
