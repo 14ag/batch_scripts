@@ -94,7 +94,7 @@ if "%file_or_folder%"=="folder" (
 ) else if "%file_or_folder%"=="" (
 	call :error "...%_path:~-10%" not found
 	goto :getFile
-) else goto :getfile
+) else goto :getFile
 
 :directory_processing
 cls
@@ -120,7 +120,6 @@ if %found_files% equ 0 (
 
 
 cls
-call :info the following files will be %allow_block%ed:
 for %%j in (%extensions%) do (
 	dir /b *%%j
 )
@@ -143,7 +142,7 @@ if %errorlevel% equ 2 (
 		for /r "%workingDirectory%" %%i in (*%%j) do (
 		    call :subRoutine "%%~i"
 			set /a "all_count+=1"
-			if errorlevel 0 set /a "ok_count+=1"
+			if !errorlevel! equ 0 set /a "ok_count+=1"
 		)   )
 	:: show number of files installed successfully
 	call :info done. !ok_count!/!all_count! files processed.
