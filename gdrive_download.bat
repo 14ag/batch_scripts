@@ -1,17 +1,15 @@
-REM LINT:IGNORE S007, S013, S022
 @echo off
-REM LINT:IGNORE S011, S020
-:: install gdrive, create shortcut of shared folder in yr drive, open it using windows explorer, get shared path, use tis tool to download todo 
+:: install gdrive, create shortcut of shared folder in yr drive, open it using windows explorer, get shared path, use tis tool to download todo
 :loop1
 set /p "so=source file or folder: "
-set /p "de=dest: "
+set "de=%userprofile%\desktop"
+set /p "de=dest (press 'enter' to choose destop): "
 set "file=*.*"
 
 
 for %%i in ("%so:"=%") do set "so=%%~i"
 for %%j in ("%de:"=%") do set "de=%%~j"
 
-REM LINT:IGNORE P024
 setlocal enabledelayedexpansion
 call :file_or_folder "%so%"
 if "%file_or_folder%"=="file" (
@@ -40,7 +38,7 @@ endlocal
 cls
 goto :loop1
 
-
+::=================================================================================================
 
 :file_or_folder
 :: call :file_or_folder file_or_folder
@@ -69,7 +67,7 @@ exit /b 0
 set "path=%*"
 :check_backslash
 :: Check if the string contains a backslash
-echo "%path%" | find "\" >nul && (
+echo "%path%" | find /i "\" >nul && (
 	:: Strip everything up to the first backslash and repeat
 	set "path=%path:*\=%"
 	goto :check_backslash
