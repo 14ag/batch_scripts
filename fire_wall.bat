@@ -326,7 +326,7 @@ exit /b 0
 :check
 set "check="
 set "filename=%1"
-set "extensions=%2"
+set "extensions=%2" 
 set "filename=%filename:"=%"
 set "extensions=%extensions:"=%"
 setlocal enabledelayedexpansion

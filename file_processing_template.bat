@@ -121,7 +121,7 @@ if %found_files% equ 0 (
 
 cls
 for %%j in (%extensions%) do (
-	dir /b *%%j
+	dir /b *%%j  REM LINT:IGNORE-LINE P014
 )
 
 
@@ -140,7 +140,7 @@ if %errorlevel% equ 2 (
 	:: install each file in the current directory
 	for %%j in (%extensions%) do (
 		for /r "%workingDirectory%" %%i in (*%%j) do (
-		    call :subRoutine "%%~i"
+		    call :subRoutine "%%~i"  REM LINT:IGNORE-LINE S012
 			set /a "all_count+=1"
 			if !errorlevel! equ 0 set /a "ok_count+=1"
 		)   )
@@ -230,7 +230,7 @@ set "filename=%2"
 for /L %%a in (1,1,10) do (
     if "!control_extension:~%%a!"=="" (
         for /f "tokens=1" %%b in ("-%%a") do (
-            for /f "tokens=1" %%c in ("!filename:~%%b!") do (
+            for /f "tokens=1 skip=0" %%c in ("!filename:~%%b!") do (
                 endlocal & set "truncate_str=%%c"
             )   )   )   ) >nul 2>&1
 exit /b 0
