@@ -33,6 +33,11 @@ if "%file_or_folder%"=="file" (
 
 :main
 robocopy "%source%" "%destination%" "%file%" /e /w:2 /njh /ndl /MT:127
+if %ERRORLEVEL% GEQ 8 (
+    echo [ERROR] Robocopy encountered an error. Exit code: %ERRORLEVEL%
+) else (
+    echo [SUCCESS] Copy operation completed successfully.
+)
 pause
 endlocal
 cls
@@ -64,14 +69,9 @@ exit /b 0
 :get_folder_name
 :: call :get_folder_name [path]
 :: returns the name of the folder whose path was provided in the variable !get_folder_name!
-set "path=%*"
-:check_backslash
-:: Check if the string contains a backslash
-echo "%path%" | find /i "\" >nul && (
-	:: Strip everything up to the first backslash and repeat
-	set "path=%path:*\=%"
-	goto :check_backslash
-) || (
-    set "get_folder_name=%path%"
-)
+setlocal enabledelayedexpansion
+set "folder_path=%~1"
+if "!folder_path:~-1!"=="\" set "folder_path=!folder_path:~0,-1!"
+for %%A in ("!folder_path!") do set "fname=%%~nxA"
+endlocal & set "get_folder_name=%fname%"
 exit /b 0
