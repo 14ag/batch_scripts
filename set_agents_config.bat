@@ -18,7 +18,6 @@ call :junctionMigrate "%USERPROFILE%\.gemini"
 
 ::antigravity
 call :junctionMigrate "%USERPROFILE%\.gemini\antigravity"
-call :junctionMigrate "%USERPROFILE%\.antigravity_cockpit"
 call :junctionMigrate "%USERPROFILE%\.antigravity"
 
 ::claude
