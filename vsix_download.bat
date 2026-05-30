@@ -52,3 +52,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
 "Write-Host 'Download complete.'"
 
 endlocal
+pause
